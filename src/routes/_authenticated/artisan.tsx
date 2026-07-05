@@ -52,7 +52,7 @@ function ArtisanConsole() {
               <div><Label>City</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
               <div><Label>Years experience</Label><Input type="number" value={form.years_experience} onChange={(e) => setForm({ ...form, years_experience: e.target.value })} /></div>
             </div>
-            <div><Label>Avatar URL (optional)</Label><Input value={form.avatar_url} onChange={(e) => setForm({ ...form, avatar_url: e.target.value })} placeholder="https://…" /></div>
+            <div><Label>Avatar</Label><ImageUploader bucket="avatars" value={form.avatar_url} onChange={(url) => setForm({ ...form, avatar_url: url })} label="Upload avatar" /></div>
             <div><Label>Bio</Label><Textarea rows={4} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} /></div>
             <Button disabled={!form.display_name || !form.profession || saveA.isPending} onClick={() => saveA.mutate()} className="w-full bg-gradient-warm text-white hover:opacity-95">
               {saveA.isPending ? "Creating…" : "Create profile"}
