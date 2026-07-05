@@ -30,6 +30,7 @@ import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedArtisanRouteImport } from './routes/_authenticated/artisan'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
+import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -136,6 +137,11 @@ const AuthenticatedOrdersIdRoute = AuthenticatedOrdersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedOrdersRoute,
 } as any)
+const AuthenticatedMessagesIdRoute = AuthenticatedMessagesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedMessagesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -149,7 +155,7 @@ export interface FileRoutesByFullPath {
   '/artisan': typeof AuthenticatedArtisanRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
-  '/messages': typeof AuthenticatedMessagesRoute
+  '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/vendor': typeof AuthenticatedVendorRoute
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
 export interface FileRoutesByTo {
@@ -171,7 +178,7 @@ export interface FileRoutesByTo {
   '/artisan': typeof AuthenticatedArtisanRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
-  '/messages': typeof AuthenticatedMessagesRoute
+  '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/vendor': typeof AuthenticatedVendorRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
 export interface FileRoutesById {
@@ -195,7 +203,7 @@ export interface FileRoutesById {
   '/_authenticated/artisan': typeof AuthenticatedArtisanRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
-  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/_authenticated/vendor': typeof AuthenticatedVendorRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
 export interface FileRouteTypes {
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/messages/$id'
     | '/orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/messages/$id'
     | '/orders/$id'
   id:
     | '__root__'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/_authenticated/messages/$id'
     | '/_authenticated/orders/$id'
   fileRoutesById: FileRoutesById
 }
@@ -438,8 +450,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersIdRouteImport
       parentRoute: typeof AuthenticatedOrdersRoute
     }
+    '/_authenticated/messages/$id': {
+      id: '/_authenticated/messages/$id'
+      path: '/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof AuthenticatedMessagesIdRouteImport
+      parentRoute: typeof AuthenticatedMessagesRoute
+    }
   }
 }
+
+interface AuthenticatedMessagesRouteChildren {
+  AuthenticatedMessagesIdRoute: typeof AuthenticatedMessagesIdRoute
+}
+
+const AuthenticatedMessagesRouteChildren: AuthenticatedMessagesRouteChildren = {
+  AuthenticatedMessagesIdRoute: AuthenticatedMessagesIdRoute,
+}
+
+const AuthenticatedMessagesRouteWithChildren =
+  AuthenticatedMessagesRoute._addFileChildren(
+    AuthenticatedMessagesRouteChildren,
+  )
 
 interface AuthenticatedOrdersRouteChildren {
   AuthenticatedOrdersIdRoute: typeof AuthenticatedOrdersIdRoute
@@ -456,7 +488,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedArtisanRoute: typeof AuthenticatedArtisanRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
-  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRouteWithChildren
   AuthenticatedVendorRoute: typeof AuthenticatedVendorRoute
@@ -467,7 +499,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedArtisanRoute: AuthenticatedArtisanRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
-  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRouteWithChildren,
   AuthenticatedVendorRoute: AuthenticatedVendorRoute,
