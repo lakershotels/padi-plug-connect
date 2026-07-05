@@ -37,9 +37,15 @@ function ArtisanPage() {
   const { user } = useSession();
   const navigate = useNavigate();
   const book = useServerFn(bookService);
+  const startChat = useServerFn(startWithArtisan);
   const bookMut = useMutation({
     mutationFn: (serviceId: string) => book({ data: { serviceId } }),
     onSuccess: (r) => { toast.success("Booking held in escrow!"); navigate({ to: "/orders/$id", params: { id: r.orderId } }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const chatMut = useMutation({
+    mutationFn: (artisanId: string) => startChat({ data: { artisanId } }),
+    onSuccess: (r: any) => navigate({ to: "/messages/$id", params: { id: r.id } }),
     onError: (e: any) => toast.error(e.message),
   });
   if (!data) return null;
