@@ -63,7 +63,10 @@ function VendorConsole() {
             <div><Label>Store name</Label><Input value={form.store_name} onChange={(e) => setForm({ ...form, store_name: e.target.value })} /></div>
             <div><Label>Tagline</Label><Input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="e.g. Handmade leather goods from Kano" /></div>
             <div><Label>City</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-            <div><Label>Logo URL (optional)</Label><Input value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://…" /></div>
+            <div>
+              <Label>Logo</Label>
+              <ImageUploader bucket="avatars" value={form.logo_url} onChange={(url) => setForm({ ...form, logo_url: url })} label="Upload logo" />
+            </div>
             <div><Label>About your store</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} /></div>
             <Button disabled={!form.store_name || saveV.isPending} onClick={() => saveV.mutate()} className="w-full bg-gradient-hero text-primary-foreground hover:opacity-95">
               {saveV.isPending ? "Creating…" : "Open store"}
