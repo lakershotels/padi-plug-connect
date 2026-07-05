@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, Bell, User as UserIcon, Menu } from "lucide-react";
+import { Search, ShoppingBag, Bell, User as UserIcon, MessageSquare } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import {
