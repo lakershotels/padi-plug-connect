@@ -1,8 +1,13 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import { useSuspenseQuery, queryOptions, useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { getVendor } from "@/lib/catalog.functions";
+import { startWithVendor } from "@/lib/chat.functions";
 import { formatMoney } from "@/lib/money";
-import { BadgeCheck, MapPin, Star } from "lucide-react";
+import { BadgeCheck, MapPin, Star, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useSession } from "@/hooks/use-session";
 
 const vendorQuery = (slug: string) => queryOptions({ queryKey: ["vendor", slug], queryFn: () => getVendor({ data: { slug } }) });
 
