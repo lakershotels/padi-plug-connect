@@ -3,8 +3,9 @@ import { useSuspenseQuery, queryOptions, useMutation } from "@tanstack/react-que
 import { useServerFn } from "@tanstack/react-start";
 import { getArtisan } from "@/lib/catalog.functions";
 import { bookService } from "@/lib/orders.functions";
+import { startWithArtisan } from "@/lib/chat.functions";
 import { formatMoney } from "@/lib/money";
-import { BadgeCheck, MapPin, Star, Clock, ShieldCheck } from "lucide-react";
+import { BadgeCheck, MapPin, Star, Clock, ShieldCheck, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-session";
@@ -36,9 +37,15 @@ function ArtisanPage() {
   const { user } = useSession();
   const navigate = useNavigate();
   const book = useServerFn(bookService);
+  const startChat = useServerFn(startWithArtisan);
   const bookMut = useMutation({
     mutationFn: (serviceId: string) => book({ data: { serviceId } }),
     onSuccess: (r) => { toast.success("Booking held in escrow!"); navigate({ to: "/orders/$id", params: { id: r.orderId } }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+  const chatMut = useMutation({
+    mutationFn: (artisanId: string) => startChat({ data: { artisanId } }),
+    onSuccess: (r: any) => navigate({ to: "/messages/$id", params: { id: r.id } }),
     onError: (e: any) => toast.error(e.message),
   });
   if (!data) return null;
@@ -63,6 +70,11 @@ function ArtisanPage() {
               <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-gold text-gold" />{Number(a.rating_avg).toFixed(1)} ({a.rating_count})</span>
             </div>
           </div>
+          {user && (
+            <Button variant="outline" onClick={() => chatMut.mutate(a.id)} disabled={chatMut.isPending}>
+              <MessageSquare className="mr-2 h-4 w-4" />Message
+            </Button>
+          )}
         </div>
 
         {a.bio && <p className="mt-6 max-w-3xl text-sm text-muted-foreground whitespace-pre-wrap">{a.bio}</p>}

@@ -1,8 +1,13 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import { useSuspenseQuery, queryOptions, useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { getVendor } from "@/lib/catalog.functions";
+import { startWithVendor } from "@/lib/chat.functions";
 import { formatMoney } from "@/lib/money";
-import { BadgeCheck, MapPin, Star } from "lucide-react";
+import { BadgeCheck, MapPin, Star, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useSession } from "@/hooks/use-session";
 
 const vendorQuery = (slug: string) => queryOptions({ queryKey: ["vendor", slug], queryFn: () => getVendor({ data: { slug } }) });
 
@@ -28,6 +33,14 @@ export const Route = createFileRoute("/vendors/$slug")({
 function VendorPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(vendorQuery(slug));
+  const navigate = useNavigate();
+  const { user } = useSession();
+  const start = useServerFn(startWithVendor);
+  const startMut = useMutation({
+    mutationFn: (vendorId: string) => start({ data: { vendorId } }),
+    onSuccess: (r: any) => navigate({ to: "/messages/$id", params: { id: r.id } }),
+    onError: (e: any) => toast.error(e.message),
+  });
   if (!data) return null;
   const v: any = data.vendor;
 
@@ -50,6 +63,14 @@ function VendorPage() {
               <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-gold text-gold" />{Number(v.rating_avg).toFixed(1)} ({v.rating_count})</span>
             </div>
           </div>
+          {user && user.id !== v.owner_id && (
+            <Button onClick={() => startMut.mutate(v.id)} disabled={startMut.isPending} className="bg-gradient-hero text-primary-foreground">
+              <MessageSquare className="mr-2 h-4 w-4" />Message store
+            </Button>
+          )}
+          {!user && (
+            <Button asChild variant="outline"><a href="/auth">Sign in to message</a></Button>
+          )}
         </div>
 
         {v.description && <p className="mt-6 max-w-3xl text-sm text-muted-foreground whitespace-pre-wrap">{v.description}</p>}

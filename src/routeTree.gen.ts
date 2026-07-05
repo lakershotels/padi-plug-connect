@@ -25,10 +25,13 @@ import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedVendorRouteImport } from './routes/_authenticated/vendor'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated/favorites'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedArtisanRouteImport } from './routes/_authenticated/artisan'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
+import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -110,6 +113,11 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFavoritesRoute = AuthenticatedFavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
@@ -125,10 +133,20 @@ const AuthenticatedArtisanRoute = AuthenticatedArtisanRouteImport.update({
   path: '/artisan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOrdersIdRoute = AuthenticatedOrdersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AuthenticatedOrdersRoute,
+} as any)
+const AuthenticatedMessagesIdRoute = AuthenticatedMessagesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedMessagesRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -140,9 +158,11 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/artisan': typeof AuthenticatedArtisanRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
+  '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/vendor': typeof AuthenticatedVendorRoute
@@ -150,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
 export interface FileRoutesByTo {
@@ -161,9 +182,11 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/artisan': typeof AuthenticatedArtisanRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
+  '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/vendor': typeof AuthenticatedVendorRoute
@@ -171,6 +194,7 @@ export interface FileRoutesByTo {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
 export interface FileRoutesById {
@@ -184,9 +208,11 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/artisan': typeof AuthenticatedArtisanRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/_authenticated/vendor': typeof AuthenticatedVendorRoute
@@ -194,6 +220,7 @@ export interface FileRoutesById {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
 export interface FileRouteTypes {
@@ -207,9 +234,11 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/sell'
     | '/sitemap.xml'
+    | '/admin'
     | '/artisan'
     | '/dashboard'
     | '/favorites'
+    | '/messages'
     | '/notifications'
     | '/orders'
     | '/vendor'
@@ -217,6 +246,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/messages/$id'
     | '/orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -228,9 +258,11 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/sell'
     | '/sitemap.xml'
+    | '/admin'
     | '/artisan'
     | '/dashboard'
     | '/favorites'
+    | '/messages'
     | '/notifications'
     | '/orders'
     | '/vendor'
@@ -238,6 +270,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/messages/$id'
     | '/orders/$id'
   id:
     | '__root__'
@@ -250,9 +283,11 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/sell'
     | '/sitemap.xml'
+    | '/_authenticated/admin'
     | '/_authenticated/artisan'
     | '/_authenticated/dashboard'
     | '/_authenticated/favorites'
+    | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/orders'
     | '/_authenticated/vendor'
@@ -260,6 +295,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/_authenticated/messages/$id'
     | '/_authenticated/orders/$id'
   fileRoutesById: FileRoutesById
 }
@@ -391,6 +427,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/favorites': {
       id: '/_authenticated/favorites'
       path: '/favorites'
@@ -412,6 +455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedArtisanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orders/$id': {
       id: '/_authenticated/orders/$id'
       path: '/$id'
@@ -419,8 +469,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersIdRouteImport
       parentRoute: typeof AuthenticatedOrdersRoute
     }
+    '/_authenticated/messages/$id': {
+      id: '/_authenticated/messages/$id'
+      path: '/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof AuthenticatedMessagesIdRouteImport
+      parentRoute: typeof AuthenticatedMessagesRoute
+    }
   }
 }
+
+interface AuthenticatedMessagesRouteChildren {
+  AuthenticatedMessagesIdRoute: typeof AuthenticatedMessagesIdRoute
+}
+
+const AuthenticatedMessagesRouteChildren: AuthenticatedMessagesRouteChildren = {
+  AuthenticatedMessagesIdRoute: AuthenticatedMessagesIdRoute,
+}
+
+const AuthenticatedMessagesRouteWithChildren =
+  AuthenticatedMessagesRoute._addFileChildren(
+    AuthenticatedMessagesRouteChildren,
+  )
 
 interface AuthenticatedOrdersRouteChildren {
   AuthenticatedOrdersIdRoute: typeof AuthenticatedOrdersIdRoute
@@ -434,9 +504,11 @@ const AuthenticatedOrdersRouteWithChildren =
   AuthenticatedOrdersRoute._addFileChildren(AuthenticatedOrdersRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedArtisanRoute: typeof AuthenticatedArtisanRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRouteWithChildren
   AuthenticatedVendorRoute: typeof AuthenticatedVendorRoute
@@ -444,9 +516,11 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedArtisanRoute: AuthenticatedArtisanRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRouteWithChildren,
   AuthenticatedVendorRoute: AuthenticatedVendorRoute,

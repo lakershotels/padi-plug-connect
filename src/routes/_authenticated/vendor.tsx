@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Plus, Store, Trash2, Pencil } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ImageUploader } from "@/components/image-uploader";
 
 export const Route = createFileRoute("/_authenticated/vendor")({
   head: () => ({ meta: [{ title: "Vendor console — PadiPlug" }] }),
@@ -62,7 +63,10 @@ function VendorConsole() {
             <div><Label>Store name</Label><Input value={form.store_name} onChange={(e) => setForm({ ...form, store_name: e.target.value })} /></div>
             <div><Label>Tagline</Label><Input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="e.g. Handmade leather goods from Kano" /></div>
             <div><Label>City</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-            <div><Label>Logo URL (optional)</Label><Input value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://…" /></div>
+            <div>
+              <Label>Logo</Label>
+              <ImageUploader bucket="avatars" value={form.logo_url} onChange={(url) => setForm({ ...form, logo_url: url })} label="Upload logo" />
+            </div>
             <div><Label>About your store</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} /></div>
             <Button disabled={!form.store_name || saveV.isPending} onClick={() => saveV.mutate()} className="w-full bg-gradient-hero text-primary-foreground hover:opacity-95">
               {saveV.isPending ? "Creating…" : "Open store"}
@@ -90,7 +94,10 @@ function VendorConsole() {
             <DialogHeader><DialogTitle>{editing ? "Edit product" : "New product"}</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>Title</Label><Input value={prod.title} onChange={(e) => setProd({ ...prod, title: e.target.value })} /></div>
-              <div><Label>Image URL</Label><Input value={prod.image_url} onChange={(e) => setProd({ ...prod, image_url: e.target.value })} placeholder="https://…" /></div>
+              <div>
+                <Label>Product image</Label>
+                <ImageUploader value={prod.image_url} onChange={(url) => setProd({ ...prod, image_url: url })} label="Upload product image" />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Price (₦)</Label><Input type="number" value={prod.price_naira} onChange={(e) => setProd({ ...prod, price_naira: e.target.value })} /></div>
                 <div><Label>Stock</Label><Input type="number" value={prod.stock} onChange={(e) => setProd({ ...prod, stock: e.target.value })} /></div>
