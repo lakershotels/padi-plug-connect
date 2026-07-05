@@ -33,6 +33,14 @@ export const Route = createFileRoute("/vendors/$slug")({
 function VendorPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(vendorQuery(slug));
+  const navigate = useNavigate();
+  const { user } = useSession();
+  const start = useServerFn(startWithVendor);
+  const startMut = useMutation({
+    mutationFn: (vendorId: string) => start({ data: { vendorId } }),
+    onSuccess: (r: any) => navigate({ to: "/messages/$id", params: { id: r.id } }),
+    onError: (e: any) => toast.error(e.message),
+  });
   if (!data) return null;
   const v: any = data.vendor;
 
@@ -55,6 +63,14 @@ function VendorPage() {
               <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-gold text-gold" />{Number(v.rating_avg).toFixed(1)} ({v.rating_count})</span>
             </div>
           </div>
+          {user && user.id !== v.owner_id && (
+            <Button onClick={() => startMut.mutate(v.id)} disabled={startMut.isPending} className="bg-gradient-hero text-primary-foreground">
+              <MessageSquare className="mr-2 h-4 w-4" />Message store
+            </Button>
+          )}
+          {!user && (
+            <Button asChild variant="outline"><a href="/auth">Sign in to message</a></Button>
+          )}
         </div>
 
         {v.description && <p className="mt-6 max-w-3xl text-sm text-muted-foreground whitespace-pre-wrap">{v.description}</p>}
