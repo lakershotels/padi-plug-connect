@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Plus, Wrench, Trash2, Pencil } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ImageUploader } from "@/components/image-uploader";
 
 export const Route = createFileRoute("/_authenticated/artisan")({
   head: () => ({ meta: [{ title: "Artisan console — PadiPlug" }] }),
