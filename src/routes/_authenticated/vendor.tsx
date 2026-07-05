@@ -93,8 +93,10 @@ function VendorConsole() {
           <DialogContent>
             <DialogHeader><DialogTitle>{editing ? "Edit product" : "New product"}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Title</Label><Input value={prod.title} onChange={(e) => setProd({ ...prod, title: e.target.value })} /></div>
-              <div><Label>Image URL</Label><Input value={prod.image_url} onChange={(e) => setProd({ ...prod, image_url: e.target.value })} placeholder="https://…" /></div>
+              <div>
+                <Label>Product image</Label>
+                <ImageUploader value={prod.image_url} onChange={(url) => setProd({ ...prod, image_url: url })} label="Upload product image" />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Price (₦)</Label><Input type="number" value={prod.price_naira} onChange={(e) => setProd({ ...prod, price_naira: e.target.value })} /></div>
                 <div><Label>Stock</Label><Input type="number" value={prod.stock} onChange={(e) => setProd({ ...prod, stock: e.target.value })} /></div>
