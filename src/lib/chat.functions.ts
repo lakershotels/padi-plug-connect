@@ -118,7 +118,6 @@ export const sendMessage = createServerFn({ method: "POST" })
     const recipientId = convo.user_a === userId ? convo.user_b : convo.user_a;
     await supabase.from("notifications").insert({
       user_id: recipientId,
-      kind: "message",
       title: "New message",
       body: data.body.slice(0, 120),
       link: `/messages/${data.conversationId}`,
