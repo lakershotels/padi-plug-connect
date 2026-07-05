@@ -3,8 +3,9 @@ import { useSuspenseQuery, queryOptions, useMutation } from "@tanstack/react-que
 import { useServerFn } from "@tanstack/react-start";
 import { getArtisan } from "@/lib/catalog.functions";
 import { bookService } from "@/lib/orders.functions";
+import { startWithArtisan } from "@/lib/chat.functions";
 import { formatMoney } from "@/lib/money";
-import { BadgeCheck, MapPin, Star, Clock, ShieldCheck } from "lucide-react";
+import { BadgeCheck, MapPin, Star, Clock, ShieldCheck, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-session";
