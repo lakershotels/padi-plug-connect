@@ -93,6 +93,7 @@ function VendorConsole() {
           <DialogContent>
             <DialogHeader><DialogTitle>{editing ? "Edit product" : "New product"}</DialogTitle></DialogHeader>
             <div className="space-y-3">
+              <div><Label>Title</Label><Input value={prod.title} onChange={(e) => setProd({ ...prod, title: e.target.value })} /></div>
               <div>
                 <Label>Product image</Label>
                 <ImageUploader value={prod.image_url} onChange={(url) => setProd({ ...prod, image_url: url })} label="Upload product image" />
