@@ -58,6 +58,9 @@ export function SiteHeader() {
                 <Link to="/notifications" aria-label="Notifications"><Bell className="h-5 w-5" /></Link>
               </Button>
               <Button variant="ghost" size="icon" asChild>
+                <Link to="/messages" aria-label="Messages"><MessageSquare className="h-5 w-5" /></Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
                 <Link to="/cart" aria-label="Cart"><ShoppingBag className="h-5 w-5" /></Link>
               </Button>
               <DropdownMenu>
