@@ -72,11 +72,13 @@ export function SiteHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link to="/dashboard">Dashboard</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/orders">My orders</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/messages">Messages</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/wallet">Wallet</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/favorites">Favorites</Link></DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link to="/vendor">Vendor console</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/artisan">Artisan console</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut}>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>
