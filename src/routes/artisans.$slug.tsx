@@ -70,6 +70,11 @@ function ArtisanPage() {
               <span className="inline-flex items-center gap-1"><Star className="h-3 w-3 fill-gold text-gold" />{Number(a.rating_avg).toFixed(1)} ({a.rating_count})</span>
             </div>
           </div>
+          {user && (
+            <Button variant="outline" onClick={() => chatMut.mutate(a.id)} disabled={chatMut.isPending}>
+              <MessageSquare className="mr-2 h-4 w-4" />Message
+            </Button>
+          )}
         </div>
 
         {a.bio && <p className="mt-6 max-w-3xl text-sm text-muted-foreground whitespace-pre-wrap">{a.bio}</p>}
