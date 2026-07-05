@@ -116,7 +116,8 @@ export const sendMessage = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     await supabase.from("conversations").update({ last_message_at: new Date().toISOString() }).eq("id", data.conversationId);
     const recipientId = convo.user_a === userId ? convo.user_b : convo.user_a;
-    await supabase.from("notifications").insert({
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("notifications").insert({
       user_id: recipientId,
       title: "New message",
       body: data.body.slice(0, 120),
