@@ -157,3 +157,22 @@ export const startWithArtisan = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { id: created.id };
   });
+
+export const getUnreadTotal = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: convos } = await supabase
+      .from("conversations")
+      .select("id")
+      .or(`user_a.eq.${userId},user_b.eq.${userId}`);
+    const ids = (convos ?? []).map((c) => c.id);
+    if (ids.length === 0) return { count: 0 };
+    const { count } = await supabase
+      .from("messages")
+      .select("id", { count: "exact", head: true })
+      .in("conversation_id", ids)
+      .neq("sender_id", userId)
+      .is("read_at", null);
+    return { count: count ?? 0 };
+  });
