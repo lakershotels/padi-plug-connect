@@ -11,7 +11,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUnreadTotal } from "@/lib/chat.functions";
+
+function IconBadge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="pointer-events-none absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-none text-destructive-foreground">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
 
 export function SiteHeader() {
   const { user, loading } = useSession();
