@@ -266,3 +266,33 @@ export const submitReview = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+export const addDisputeEvidence = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ orderId: z.string().uuid(), url: z.string().url() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: dispute } = await supabase
+      .from("disputes")
+      .select("id,opened_by,evidence_urls")
+      .eq("order_id", data.orderId)
+      .maybeSingle();
+    if (!dispute) throw new Error("Dispute not found");
+    if (dispute.opened_by !== userId) throw new Error("Only the opener can add evidence");
+    const urls = [...(dispute.evidence_urls ?? []), data.url];
+    const { error } = await supabase.from("disputes").update({ evidence_urls: urls }).eq("id", dispute.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, urls };
+  });
+
+export const getMyDispute = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: dispute } = await context.supabase
+      .from("disputes")
+      .select("*")
+      .eq("order_id", data.orderId)
+      .maybeSingle();
+    return dispute;
+  });
