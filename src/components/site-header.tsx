@@ -27,6 +27,26 @@ function IconBadge({ count }: { count: number }) {
 export function SiteHeader() {
   const { user, loading } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const qc = useQueryClient();
+
+  const { data: unread } = useQuery({
+    queryKey: ["unreadTotal"],
+    queryFn: () => getUnreadTotal(),
+    enabled: !!user,
+    refetchInterval: 60_000,
+  });
+  const unreadCount = unread?.count ?? 0;
+
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("header-unread")
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => {
+        qc.invalidateQueries({ queryKey: ["unreadTotal"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, qc]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
