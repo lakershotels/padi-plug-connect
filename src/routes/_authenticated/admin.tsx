@@ -64,9 +64,14 @@ function AdminPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="flex items-center gap-2">
-        <ShieldCheck className="h-6 w-6 text-primary" />
-        <h1 className="font-display text-3xl font-bold">Admin dashboard</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-6 w-6 text-primary" />
+          <h1 className="font-display text-3xl font-bold">Admin dashboard</h1>
+        </div>
+        <Button asChild variant="outline" size="sm">
+          <a href="/admin/disputes">Disputes console →</a>
+        </Button>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
