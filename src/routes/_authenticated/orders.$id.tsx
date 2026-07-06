@@ -132,8 +132,7 @@ function OrderDetail() {
             )}
           </Card>
 
-          <Card className="p-5">
-            <h2 className="font-display text-lg font-semibold">Items</h2>
+          {order.status === "disputed" && <DisputePanel orderId={id} isCustomer={isCustomer} />}
             <ul className="mt-3 space-y-3">
               {(order as any).order_items?.map((it: any) => (
                 <li key={it.id} className="flex items-center gap-3">
