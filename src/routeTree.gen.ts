@@ -32,6 +32,7 @@ import { Route as AuthenticatedArtisanRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
 import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
+import { Route as AuthenticatedAdminDisputesRouteImport } from './routes/_authenticated/admin.disputes'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -148,6 +149,12 @@ const AuthenticatedMessagesIdRoute = AuthenticatedMessagesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedMessagesRoute,
 } as any)
+const AuthenticatedAdminDisputesRoute =
+  AuthenticatedAdminDisputesRouteImport.update({
+    id: '/disputes',
+    path: '/disputes',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -158,7 +165,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/artisan': typeof AuthenticatedArtisanRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
@@ -182,7 +190,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/artisan': typeof AuthenticatedArtisanRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
@@ -194,6 +202,7 @@ export interface FileRoutesByTo {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
@@ -208,7 +217,7 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/artisan': typeof AuthenticatedArtisanRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
@@ -220,6 +229,7 @@ export interface FileRoutesById {
   '/artisans/$slug': typeof ArtisansSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/vendors/$slug': typeof VendorsSlugRoute
+  '/_authenticated/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
 }
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/admin/disputes'
     | '/messages/$id'
     | '/orders/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/admin/disputes'
     | '/messages/$id'
     | '/orders/$id'
   id:
@@ -295,6 +307,7 @@ export interface FileRouteTypes {
     | '/artisans/$slug'
     | '/products/$id'
     | '/vendors/$slug'
+    | '/_authenticated/admin/disputes'
     | '/_authenticated/messages/$id'
     | '/_authenticated/orders/$id'
   fileRoutesById: FileRoutesById
@@ -476,8 +489,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagesIdRouteImport
       parentRoute: typeof AuthenticatedMessagesRoute
     }
+    '/_authenticated/admin/disputes': {
+      id: '/_authenticated/admin/disputes'
+      path: '/disputes'
+      fullPath: '/admin/disputes'
+      preLoaderRoute: typeof AuthenticatedAdminDisputesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminDisputesRoute: typeof AuthenticatedAdminDisputesRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminDisputesRoute: AuthenticatedAdminDisputesRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedMessagesRouteChildren {
   AuthenticatedMessagesIdRoute: typeof AuthenticatedMessagesIdRoute
@@ -504,7 +535,7 @@ const AuthenticatedOrdersRouteWithChildren =
   AuthenticatedOrdersRoute._addFileChildren(AuthenticatedOrdersRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedArtisanRoute: typeof AuthenticatedArtisanRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
@@ -516,7 +547,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedArtisanRoute: AuthenticatedArtisanRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
