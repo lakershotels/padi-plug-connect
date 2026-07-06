@@ -11,11 +11,42 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUnreadTotal } from "@/lib/chat.functions";
+
+function IconBadge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="pointer-events-none absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-none text-destructive-foreground">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
 
 export function SiteHeader() {
   const { user, loading } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const qc = useQueryClient();
+
+  const { data: unread } = useQuery({
+    queryKey: ["unreadTotal"],
+    queryFn: () => getUnreadTotal(),
+    enabled: !!user,
+    refetchInterval: 60_000,
+  });
+  const unreadCount = unread?.count ?? 0;
+
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("header-unread")
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => {
+        qc.invalidateQueries({ queryKey: ["unreadTotal"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, qc]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -54,11 +85,14 @@ export function SiteHeader() {
 
           {!loading && user ? (
             <>
-              <Button variant="ghost" size="icon" asChild>
+              <Button variant="ghost" size="icon" asChild className="relative">
                 <Link to="/notifications" aria-label="Notifications"><Bell className="h-5 w-5" /></Link>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/messages" aria-label="Messages"><MessageSquare className="h-5 w-5" /></Link>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link to="/messages" aria-label={`Messages${unreadCount ? `, ${unreadCount} unread` : ""}`}>
+                  <MessageSquare className="h-5 w-5" />
+                  <IconBadge count={unreadCount} />
+                </Link>
               </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/cart" aria-label="Cart"><ShoppingBag className="h-5 w-5" /></Link>
