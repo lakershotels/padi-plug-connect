@@ -85,11 +85,14 @@ export function SiteHeader() {
 
           {!loading && user ? (
             <>
-              <Button variant="ghost" size="icon" asChild>
+              <Button variant="ghost" size="icon" asChild className="relative">
                 <Link to="/notifications" aria-label="Notifications"><Bell className="h-5 w-5" /></Link>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/messages" aria-label="Messages"><MessageSquare className="h-5 w-5" /></Link>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link to="/messages" aria-label={`Messages${unreadCount ? `, ${unreadCount} unread` : ""}`}>
+                  <MessageSquare className="h-5 w-5" />
+                  <IconBadge count={unreadCount} />
+                </Link>
               </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link to="/cart" aria-label="Cart"><ShoppingBag className="h-5 w-5" /></Link>
