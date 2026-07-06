@@ -7,7 +7,7 @@ import { toast } from "sonner";
 type Props = {
   value: string;
   onChange: (url: string) => void;
-  bucket?: "product-images" | "avatars";
+  bucket?: "product-images" | "avatars" | "dispute-evidence";
   label?: string;
 };
 
