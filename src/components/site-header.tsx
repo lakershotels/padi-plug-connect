@@ -94,6 +94,15 @@ export function SiteHeader() {
 
           {!loading && user ? (
             <>
+              <Button variant="outline" size="sm" asChild className="hidden h-9 gap-1.5 rounded-full border-primary/30 bg-primary/5 px-3 font-semibold text-primary hover:bg-primary/10 sm:inline-flex">
+                <Link to="/wallet" aria-label="Wallet balance">
+                  <WalletIcon className="h-4 w-4" />
+                  <span className="tabular-nums">{formatMoney(wallet?.balance_kobo ?? 0)}</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild className="sm:hidden">
+                <Link to="/wallet" aria-label="Wallet"><WalletIcon className="h-5 w-5" /></Link>
+              </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link to="/notifications" aria-label="Notifications"><Bell className="h-5 w-5" /></Link>
               </Button>
