@@ -53,6 +53,10 @@ export function SiteHeader() {
       .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => {
         qc.invalidateQueries({ queryKey: ["unreadTotal"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "wallets", filter: `user_id=eq.${user.id}` }, () => {
+        qc.invalidateQueries({ queryKey: ["walletBalance"] });
+        qc.invalidateQueries({ queryKey: ["wallet"] });
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user, qc]);
