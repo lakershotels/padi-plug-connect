@@ -39,6 +39,13 @@ export function SiteHeader() {
   });
   const unreadCount = unread?.count ?? 0;
 
+  const { data: wallet } = useQuery({
+    queryKey: ["walletBalance"],
+    queryFn: () => getWalletBalance(),
+    enabled: !!user,
+    refetchInterval: 30_000,
+  });
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
