@@ -41,7 +41,15 @@ function ArtisanPage() {
   const bookMut = useMutation({
     mutationFn: (serviceId: string) => book({ data: { serviceId } }),
     onSuccess: (r) => { toast.success("Booking held in escrow!"); navigate({ to: "/orders/$id", params: { id: r.orderId } }); },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => {
+      const msg = e?.message ?? "Something went wrong";
+      if (/insufficient wallet/i.test(msg)) {
+        toast.error("Insufficient wallet balance. Redirecting to fund your wallet…");
+        setTimeout(() => navigate({ to: "/wallet" }), 800);
+      } else {
+        toast.error(msg);
+      }
+    },
   });
   const chatMut = useMutation({
     mutationFn: (artisanId: string) => startChat({ data: { artisanId } }),

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, Bell, User as UserIcon, Menu, MessageSquare } from "lucide-react";
+import { Search, ShoppingBag, Bell, User as UserIcon, Menu, MessageSquare, Wallet as WalletIcon } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUnreadTotal } from "@/lib/chat.functions";
+import { getWalletBalance } from "@/lib/wallet.functions";
+import { formatMoney } from "@/lib/money";
 
 function IconBadge({ count }: { count: number }) {
   if (!count) return null;
@@ -37,12 +39,23 @@ export function SiteHeader() {
   });
   const unreadCount = unread?.count ?? 0;
 
+  const { data: wallet } = useQuery({
+    queryKey: ["walletBalance"],
+    queryFn: () => getWalletBalance(),
+    enabled: !!user,
+    refetchInterval: 30_000,
+  });
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
       .channel("header-unread")
       .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => {
         qc.invalidateQueries({ queryKey: ["unreadTotal"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "wallets", filter: `user_id=eq.${user.id}` }, () => {
+        qc.invalidateQueries({ queryKey: ["walletBalance"] });
+        qc.invalidateQueries({ queryKey: ["wallet"] });
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -85,6 +98,15 @@ export function SiteHeader() {
 
           {!loading && user ? (
             <>
+              <Button variant="outline" size="sm" asChild className="hidden h-9 gap-1.5 rounded-full border-primary/30 bg-primary/5 px-3 font-semibold text-primary hover:bg-primary/10 sm:inline-flex">
+                <Link to="/wallet" aria-label="Wallet balance">
+                  <WalletIcon className="h-4 w-4" />
+                  <span className="tabular-nums">{formatMoney(wallet?.balance_kobo ?? 0)}</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild className="sm:hidden">
+                <Link to="/wallet" aria-label="Wallet"><WalletIcon className="h-5 w-5" /></Link>
+              </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link to="/notifications" aria-label="Notifications"><Bell className="h-5 w-5" /></Link>
               </Button>
@@ -135,6 +157,12 @@ export function SiteHeader() {
       {mobileOpen && (
         <div className="border-t border-border/60 bg-background md:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3 text-sm">
+            {user && (
+              <Link to="/wallet" className="mb-2 flex items-center justify-between rounded-xl bg-gradient-hero px-4 py-3 text-primary-foreground">
+                <span className="flex items-center gap-2 text-sm opacity-90"><WalletIcon className="h-4 w-4" /> Wallet</span>
+                <span className="font-display text-lg font-bold tabular-nums">{formatMoney(wallet?.balance_kobo ?? 0)}</span>
+              </Link>
+            )}
             <Link to="/marketplace" className="rounded-md px-3 py-2 hover:bg-muted">Marketplace</Link>
             <Link to="/artisans" className="rounded-md px-3 py-2 hover:bg-muted">Artisans</Link>
             <Link to="/deals" className="rounded-md px-3 py-2 hover:bg-muted">Deals</Link>

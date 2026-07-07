@@ -2,6 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const getWalletBalance = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    await supabase.from("wallets").upsert({ user_id: userId }, { onConflict: "user_id" });
+    const { data } = await supabase.from("wallets").select("balance_kobo,escrow_kobo,currency").eq("user_id", userId).maybeSingle();
+    return data ?? { balance_kobo: 0, escrow_kobo: 0, currency: "NGN" };
+  });
+
 export const getWallet = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

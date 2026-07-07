@@ -30,11 +30,13 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="mb-3 text-sm font-semibold">Trust</div>
+          <div className="mb-3 text-sm font-semibold">Trust &amp; Legal</div>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>Escrow protection</li>
             <li>Verified sellers</li>
             <li>Dispute resolution</li>
+            <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
+            <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
           </ul>
         </div>
       </div>

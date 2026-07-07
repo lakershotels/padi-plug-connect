@@ -48,10 +48,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "PadiPlug — Africa's trusted marketplace" },
       { name: "description", content: "Shop verified African vendors, book trusted artisans, and pay safely with escrow. PadiPlug protects every order until you say 'done'." },
       { name: "theme-color", content: "#1f5a3d" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "PadiPlug" },
+      { name: "format-detection", content: "telephone=no" },
       { property: "og:title", content: "PadiPlug — Africa's trusted marketplace" },
       { property: "og:description", content: "Shop verified African vendors, book trusted artisans, and pay safely with escrow. PadiPlug protects every order until you say 'done'." },
       { property: "og:type", content: "website" },
@@ -64,6 +69,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: "/favicon.ico" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
