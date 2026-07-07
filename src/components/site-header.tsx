@@ -157,6 +157,12 @@ export function SiteHeader() {
       {mobileOpen && (
         <div className="border-t border-border/60 bg-background md:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3 text-sm">
+            {user && (
+              <Link to="/wallet" className="mb-2 flex items-center justify-between rounded-xl bg-gradient-hero px-4 py-3 text-primary-foreground">
+                <span className="flex items-center gap-2 text-sm opacity-90"><WalletIcon className="h-4 w-4" /> Wallet</span>
+                <span className="font-display text-lg font-bold tabular-nums">{formatMoney(wallet?.balance_kobo ?? 0)}</span>
+              </Link>
+            )}
             <Link to="/marketplace" className="rounded-md px-3 py-2 hover:bg-muted">Marketplace</Link>
             <Link to="/artisans" className="rounded-md px-3 py-2 hover:bg-muted">Artisans</Link>
             <Link to="/deals" className="rounded-md px-3 py-2 hover:bg-muted">Deals</Link>
