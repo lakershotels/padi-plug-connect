@@ -1,0 +1,14 @@
+{
+  "name": "PadiPlug — Africa's trusted marketplace",
+  "short_name": "PadiPlug",
+  "description": "Shop verified African vendors, book trusted artisans, and pay safely with escrow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf7f2",
+  "theme_color": "#1f5a3d",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" }
+  ]
+}
