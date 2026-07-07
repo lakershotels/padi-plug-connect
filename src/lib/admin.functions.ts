@@ -7,14 +7,6 @@ async function assertAdmin(supabase: any, userId: string) {
   if (!data && !sa) throw new Error("Forbidden");
 }
 
-export const isAdmin = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { data: a } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-    const { data: sa } = await supabase.rpc("has_role", { _user_id: userId, _role: "super_admin" });
-    return { isAdmin: !!(a || sa), isSuperAdmin: !!sa };
-  });
 
 export const getAdminOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
