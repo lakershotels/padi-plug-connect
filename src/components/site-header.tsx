@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUnreadTotal } from "@/lib/chat.functions";
 import { getWalletBalance } from "@/lib/wallet.functions";
+import { isAdmin as isAdminFn } from "@/lib/admin.functions";
 import { formatMoney } from "@/lib/money";
 
 function IconBadge({ count }: { count: number }) {
@@ -45,6 +46,14 @@ export function SiteHeader() {
     enabled: !!user,
     refetchInterval: 30_000,
   });
+
+  const { data: admin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: () => isAdminFn(),
+    enabled: !!user,
+    staleTime: 5 * 60_000,
+  });
+  const showAdmin = !!admin?.isAdmin;
 
   useEffect(() => {
     if (!user) return;
@@ -134,7 +143,9 @@ export function SiteHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link to="/vendor">Vendor console</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/artisan">Artisan console</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
+                  {showAdmin && (
+                    <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut}>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>

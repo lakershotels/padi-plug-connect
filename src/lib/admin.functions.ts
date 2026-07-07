@@ -7,6 +7,7 @@ async function assertAdmin(supabase: any, userId: string) {
   if (!data && !sa) throw new Error("Forbidden");
 }
 
+
 export const getAdminOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
