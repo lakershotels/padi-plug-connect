@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, Bell, User as UserIcon, Menu, MessageSquare } from "lucide-react";
+import { Search, ShoppingBag, Bell, User as UserIcon, Menu, MessageSquare, Wallet as WalletIcon } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUnreadTotal } from "@/lib/chat.functions";
+import { getWalletBalance } from "@/lib/wallet.functions";
+import { formatMoney } from "@/lib/money";
 
 function IconBadge({ count }: { count: number }) {
   if (!count) return null;
