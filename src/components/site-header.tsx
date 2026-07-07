@@ -47,6 +47,14 @@ export function SiteHeader() {
     refetchInterval: 30_000,
   });
 
+  const { data: admin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: () => isAdminFn(),
+    enabled: !!user,
+    staleTime: 5 * 60_000,
+  });
+  const showAdmin = !!admin?.isAdmin;
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
