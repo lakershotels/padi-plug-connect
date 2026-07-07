@@ -143,7 +143,9 @@ export function SiteHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link to="/vendor">Vendor console</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/artisan">Artisan console</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
+                  {showAdmin && (
+                    <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut}>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>
