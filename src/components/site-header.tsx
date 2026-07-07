@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUnreadTotal } from "@/lib/chat.functions";
 import { getWalletBalance } from "@/lib/wallet.functions";
+import { isAdmin as isAdminFn } from "@/lib/admin.functions";
 import { formatMoney } from "@/lib/money";
 
 function IconBadge({ count }: { count: number }) {
