@@ -11,10 +11,12 @@ function pub() {
 
 export const getHomeData = createServerFn({ method: "GET" }).handler(async () => {
   const supa = pub();
-  const [cats, featuredVendors, featuredArtisans, newProducts, deals] = await Promise.all([
+  const nowIso = new Date().toISOString();
+  const [cats, featuredVendors, featuredArtisans, featuredProducts, newProducts, deals] = await Promise.all([
     supa.from("categories").select("id,slug,name,kind,icon").order("name"),
-    supa.from("vendors").select("id,slug,store_name,tagline,logo_url,banner_url,city,verification,rating_avg,rating_count").eq("is_featured", true).limit(6),
-    supa.from("artisans").select("id,slug,display_name,headline,avatar_url,profession,city,verification,rating_avg,rating_count").eq("is_featured", true).limit(6),
+    supa.from("vendors").select("id,slug,store_name,tagline,logo_url,banner_url,city,verification,rating_avg,rating_count,featured_until,plan").or(`featured_until.gt.${nowIso},is_featured.eq.true`).order("featured_until", { ascending: false, nullsFirst: false }).limit(8),
+    supa.from("artisans").select("id,slug,display_name,headline,avatar_url,profession,city,verification,rating_avg,rating_count,featured_until,plan").or(`featured_until.gt.${nowIso},is_featured.eq.true`).order("featured_until", { ascending: false, nullsFirst: false }).limit(8),
+    supa.from("products").select("id,title,slug,price_kobo,compare_at_kobo,images,rating_avg,rating_count,vendor_id,featured_until").eq("is_active", true).gt("featured_until", nowIso).order("featured_until", { ascending: false }).limit(8),
     supa.from("products").select("id,title,slug,price_kobo,compare_at_kobo,images,rating_avg,rating_count,vendor_id").eq("is_active", true).order("created_at", { ascending: false }).limit(8),
     supa.from("products").select("id,title,slug,price_kobo,compare_at_kobo,images,rating_avg,vendor_id").eq("is_active", true).not("compare_at_kobo", "is", null).limit(8),
   ]);
@@ -22,6 +24,7 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
     categories: cats.data ?? [],
     featuredVendors: featuredVendors.data ?? [],
     featuredArtisans: featuredArtisans.data ?? [],
+    featuredProducts: featuredProducts.data ?? [],
     newProducts: newProducts.data ?? [],
     deals: deals.data ?? [],
   };
