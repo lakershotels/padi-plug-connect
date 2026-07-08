@@ -98,6 +98,9 @@ export function SiteHeader() {
           <Link to="/sell" className="text-muted-foreground transition-colors hover:text-foreground">
             Sell on PadiPlug
           </Link>
+          <Link to="/plans" className="text-muted-foreground transition-colors hover:text-foreground">
+            Plans
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
@@ -143,6 +146,7 @@ export function SiteHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link to="/vendor">Vendor console</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/artisan">Artisan console</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/plans">Plans & Ads</Link></DropdownMenuItem>
                   {showAdmin && (
                     <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
                   )}
@@ -178,6 +182,7 @@ export function SiteHeader() {
             <Link to="/artisans" className="rounded-md px-3 py-2 hover:bg-muted">Artisans</Link>
             <Link to="/deals" className="rounded-md px-3 py-2 hover:bg-muted">Deals</Link>
             <Link to="/sell" className="rounded-md px-3 py-2 hover:bg-muted">Sell on PadiPlug</Link>
+            <Link to="/plans" className="rounded-md px-3 py-2 hover:bg-muted">Plans & Ads</Link>
             {!user && (
               <Link to="/auth" className="rounded-md bg-primary px-3 py-2 text-center text-primary-foreground">
                 Sign in / Join

@@ -25,6 +25,7 @@ import { Route as ProductsIdRouteImport } from './routes/products.$id'
 import { Route as ArtisansSlugRouteImport } from './routes/artisans.$slug'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedVendorRouteImport } from './routes/_authenticated/vendor'
+import { Route as AuthenticatedPlansRouteImport } from './routes/_authenticated/plans'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
@@ -115,6 +116,11 @@ const AuthenticatedVendorRoute = AuthenticatedVendorRouteImport.update({
   path: '/vendor',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPlansRoute = AuthenticatedPlansRouteImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/plans': typeof AuthenticatedPlansRoute
   '/vendor': typeof AuthenticatedVendorRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/artisans/$slug': typeof ArtisansSlugRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/plans': typeof AuthenticatedPlansRoute
   '/vendor': typeof AuthenticatedVendorRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/artisans/$slug': typeof ArtisansSlugRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/_authenticated/plans': typeof AuthenticatedPlansRoute
   '/_authenticated/vendor': typeof AuthenticatedVendorRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/artisans/$slug': typeof ArtisansSlugRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/orders'
+    | '/plans'
     | '/vendor'
     | '/wallet'
     | '/artisans/$slug'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/orders'
+    | '/plans'
     | '/vendor'
     | '/wallet'
     | '/artisans/$slug'
@@ -326,6 +337,7 @@ export interface FileRouteTypes {
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/orders'
+    | '/_authenticated/plans'
     | '/_authenticated/vendor'
     | '/_authenticated/wallet'
     | '/artisans/$slug'
@@ -466,6 +478,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/plans': {
+      id: '/_authenticated/plans'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof AuthenticatedPlansRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orders': {
       id: '/_authenticated/orders'
       path: '/orders'
@@ -582,6 +601,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRouteWithChildren
+  AuthenticatedPlansRoute: typeof AuthenticatedPlansRoute
   AuthenticatedVendorRoute: typeof AuthenticatedVendorRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
 }
@@ -594,6 +614,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRouteWithChildren,
+  AuthenticatedPlansRoute: AuthenticatedPlansRoute,
   AuthenticatedVendorRoute: AuthenticatedVendorRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
 }
@@ -631,13 +652,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

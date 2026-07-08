@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ShieldCheck, Sparkles, Search, ArrowRight, Star, MapPin, BadgeCheck, TrendingUp, Handshake, Wallet } from "lucide-react";
+import { ShieldCheck, Sparkles, Search, ArrowRight, Star, MapPin, BadgeCheck, TrendingUp, Handshake, Wallet, Rocket } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
 import { getHomeData } from "@/lib/catalog.functions";
 import { formatMoney } from "@/lib/money";
@@ -88,6 +88,36 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {/* SPONSORED / FEATURED ADS */}
+      {data.featuredProducts && data.featuredProducts.length > 0 && (
+        <Section
+          title="Featured today"
+          subtitle="Sponsored spotlights from PadiPlug sellers"
+          cta={{ to: "/plans", label: "Promote your listing" }}
+        >
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {data.featuredProducts.map((p: any) => (
+              <Link key={p.id} to="/products/$id" params={{ id: p.id }} className="group relative overflow-hidden rounded-2xl border bg-card shadow-card transition-all hover:-translate-y-0.5 hover:shadow-elevated">
+                <span className="absolute left-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-gradient-warm px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+                  <Rocket className="h-3 w-3" /> Sponsored
+                </span>
+                <div className="aspect-square overflow-hidden bg-muted">
+                  {p.images?.[0] ? (
+                    <img src={p.images[0]} alt={p.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                  ) : (
+                    <div className="grid h-full w-full place-items-center text-muted-foreground text-sm">No image</div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <div className="line-clamp-1 text-sm font-medium">{p.title}</div>
+                  <div className="mt-1 font-display text-base font-semibold text-primary">{formatMoney(p.price_kobo)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* FEATURED VENDORS */}
       <Section
