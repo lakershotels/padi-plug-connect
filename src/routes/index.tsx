@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ShieldCheck, Sparkles, Search, ArrowRight, Star, MapPin, BadgeCheck, TrendingUp, Handshake, Wallet } from "lucide-react";
+import { ShieldCheck, Sparkles, Search, ArrowRight, Star, MapPin, BadgeCheck, TrendingUp, Handshake, Wallet, Rocket } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
 import { getHomeData } from "@/lib/catalog.functions";
 import { formatMoney } from "@/lib/money";
