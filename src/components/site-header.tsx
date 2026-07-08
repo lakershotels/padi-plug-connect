@@ -98,6 +98,9 @@ export function SiteHeader() {
           <Link to="/sell" className="text-muted-foreground transition-colors hover:text-foreground">
             Sell on PadiPlug
           </Link>
+          <Link to="/plans" className="text-muted-foreground transition-colors hover:text-foreground">
+            Plans
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
