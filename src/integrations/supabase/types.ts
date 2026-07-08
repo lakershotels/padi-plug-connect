@@ -23,10 +23,13 @@ export type Database = {
           cover_url: string | null
           created_at: string
           display_name: string
+          featured_until: string | null
           headline: string | null
           id: string
           is_featured: boolean
           owner_id: string
+          plan: string
+          plan_expires_at: string | null
           portfolio_urls: string[] | null
           profession: string | null
           rating_avg: number
@@ -44,10 +47,13 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           display_name: string
+          featured_until?: string | null
           headline?: string | null
           id?: string
           is_featured?: boolean
           owner_id: string
+          plan?: string
+          plan_expires_at?: string | null
           portfolio_urls?: string[] | null
           profession?: string | null
           rating_avg?: number
@@ -65,10 +71,13 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           display_name?: string
+          featured_until?: string | null
           headline?: string | null
           id?: string
           is_featured?: boolean
           owner_id?: string
+          plan?: string
+          plan_expires_at?: string | null
           portfolio_urls?: string[] | null
           profession?: string | null
           rating_avg?: number
@@ -422,12 +431,52 @@ export type Database = {
           },
         ]
       }
+      plan_purchases: {
+        Row: {
+          amount_kobo: number
+          created_at: string
+          duration_days: number
+          expires_at: string
+          id: string
+          plan_code: string
+          scope: string
+          starts_at: string
+          target_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_kobo: number
+          created_at?: string
+          duration_days: number
+          expires_at: string
+          id?: string
+          plan_code: string
+          scope: string
+          starts_at?: string
+          target_id: string
+          user_id: string
+        }
+        Update: {
+          amount_kobo?: number
+          created_at?: string
+          duration_days?: number
+          expires_at?: string
+          id?: string
+          plan_code?: string
+          scope?: string
+          starts_at?: string
+          target_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category_id: string | null
           compare_at_kobo: number | null
           created_at: string
           description: string | null
+          featured_until: string | null
           id: string
           images: string[] | null
           is_active: boolean
@@ -447,6 +496,7 @@ export type Database = {
           compare_at_kobo?: number | null
           created_at?: string
           description?: string | null
+          featured_until?: string | null
           id?: string
           images?: string[] | null
           is_active?: boolean
@@ -466,6 +516,7 @@ export type Database = {
           compare_at_kobo?: number | null
           created_at?: string
           description?: string | null
+          featured_until?: string | null
           id?: string
           images?: string[] | null
           is_active?: boolean
@@ -683,10 +734,13 @@ export type Database = {
           country: string | null
           created_at: string
           description: string | null
+          featured_until: string | null
           id: string
           is_featured: boolean
           logo_url: string | null
           owner_id: string
+          plan: string
+          plan_expires_at: string | null
           rating_avg: number
           rating_count: number
           slug: string
@@ -701,10 +755,13 @@ export type Database = {
           country?: string | null
           created_at?: string
           description?: string | null
+          featured_until?: string | null
           id?: string
           is_featured?: boolean
           logo_url?: string | null
           owner_id: string
+          plan?: string
+          plan_expires_at?: string | null
           rating_avg?: number
           rating_count?: number
           slug: string
@@ -719,10 +776,13 @@ export type Database = {
           country?: string | null
           created_at?: string
           description?: string | null
+          featured_until?: string | null
           id?: string
           is_featured?: boolean
           logo_url?: string | null
           owner_id?: string
+          plan?: string
+          plan_expires_at?: string | null
           rating_avg?: number
           rating_count?: number
           slug?: string
