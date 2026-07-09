@@ -32,6 +32,7 @@ function ArtisansPage() {
     <div className="mx-auto max-w-7xl px-4 py-8">
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold">Book a trusted artisan</h1>
+        <p className="mt-1 text-base font-medium text-primary">Oníṣẹ́ Ọwọ́ · Mai Sana'a</p>
         <p className="text-sm text-muted-foreground">Every booking is escrow-protected. Pay only when the job is done.</p>
       </div>
 
