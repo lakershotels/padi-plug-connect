@@ -50,16 +50,17 @@ export const purchasePlan = createServerFn({ method: "POST" })
       if (!row || (row as any).owner_id !== userId) throw new Error("You don't own this profile");
     }
 
-    // Debit wallet
-    await supabase.from("wallets").upsert({ user_id: userId }, { onConflict: "user_id" });
-    const { data: wallet } = await supabase.from("wallets").select("balance_kobo").eq("user_id", userId).maybeSingle();
+    // Debit wallet (use admin client — wallets table has no user write policy by design)
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("wallets").upsert({ user_id: userId }, { onConflict: "user_id" });
+    const { data: wallet } = await supabaseAdmin.from("wallets").select("balance_kobo").eq("user_id", userId).maybeSingle();
     const bal = wallet?.balance_kobo ?? 0;
     if (bal < plan.price_kobo) {
       throw new Error(`INSUFFICIENT_WALLET:${plan.price_kobo - bal}`);
     }
     const newBal = bal - plan.price_kobo;
-    await supabase.from("wallets").update({ balance_kobo: newBal }).eq("user_id", userId);
-    await supabase.from("wallet_transactions").insert({
+    await supabaseAdmin.from("wallets").update({ balance_kobo: newBal, updated_at: new Date().toISOString() }).eq("user_id", userId);
+    await supabaseAdmin.from("wallet_transactions").insert({
       user_id: userId,
       type: "commission",
       amount_kobo: -plan.price_kobo,
