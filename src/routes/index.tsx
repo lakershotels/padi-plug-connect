@@ -74,7 +74,7 @@ function Home() {
           <Link to="/marketplace" className="text-sm font-medium text-primary hover:underline">All categories →</Link>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
-          {data.categories.slice(0, 14).map((c) => (
+          {data.categories.filter((c: any) => c.kind === "product").slice(0, 14).map((c: any) => (
             <a
               key={c.id}
               href={`/marketplace?category=${c.slug}`}
@@ -84,6 +84,11 @@ function Home() {
                 {c.name[0]}
               </span>
               <span className="text-xs font-medium leading-tight">{c.name}</span>
+              {(c.name_yo || c.name_ha) && (
+                <span className="text-[10px] leading-tight text-muted-foreground">
+                  {[c.name_yo, c.name_ha].filter(Boolean).join(" · ")}
+                </span>
+              )}
             </a>
           ))}
         </div>

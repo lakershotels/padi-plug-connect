@@ -13,7 +13,7 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
   const supa = pub();
   const nowIso = new Date().toISOString();
   const [cats, featuredVendors, featuredArtisans, featuredProducts, newProducts, deals] = await Promise.all([
-    supa.from("categories").select("id,slug,name,kind,icon").order("name"),
+    supa.from("categories").select("id,slug,name,name_yo,name_ha,kind,icon,sort_order").order("sort_order").order("name"),
     supa.from("vendors").select("id,slug,store_name,tagline,logo_url,banner_url,city,verification,rating_avg,rating_count,featured_until,plan").or(`featured_until.gt.${nowIso},is_featured.eq.true`).order("featured_until", { ascending: false, nullsFirst: false }).limit(8),
     supa.from("artisans").select("id,slug,display_name,headline,avatar_url,profession,city,verification,rating_avg,rating_count,featured_until,plan").or(`featured_until.gt.${nowIso},is_featured.eq.true`).order("featured_until", { ascending: false, nullsFirst: false }).limit(8),
     supa.from("products").select("id,title,slug,price_kobo,compare_at_kobo,images,rating_avg,rating_count,vendor_id,featured_until").eq("is_active", true).gt("featured_until", nowIso).order("featured_until", { ascending: false }).limit(8),
