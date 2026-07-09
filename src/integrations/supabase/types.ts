@@ -96,7 +96,10 @@ export type Database = {
           id: string
           kind: string
           name: string
+          name_ha: string | null
+          name_yo: string | null
           slug: string
+          sort_order: number
         }
         Insert: {
           created_at?: string
@@ -104,7 +107,10 @@ export type Database = {
           id?: string
           kind: string
           name: string
+          name_ha?: string | null
+          name_yo?: string | null
           slug: string
+          sort_order?: number
         }
         Update: {
           created_at?: string
@@ -112,7 +118,10 @@ export type Database = {
           id?: string
           kind?: string
           name?: string
+          name_ha?: string | null
+          name_yo?: string | null
           slug?: string
+          sort_order?: number
         }
         Relationships: []
       }
