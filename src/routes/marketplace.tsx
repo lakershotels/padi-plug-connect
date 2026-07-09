@@ -34,6 +34,7 @@ function Marketplace() {
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold">Marketplace</h1>
+          <p className="mt-1 text-base font-medium text-primary">Olùtàjà · Mai Sayarwa</p>
           <p className="text-sm text-muted-foreground">Escrow-protected shopping from verified sellers.</p>
         </div>
       </div>
