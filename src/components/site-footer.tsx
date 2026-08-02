@@ -38,7 +38,31 @@ export function SiteFooter() {
           <p className="mt-3 text-sm text-muted-foreground">
             The trusted African marketplace. Buy, book, and grow — with escrow protection on every order.
           </p>
+          <div className="mt-4">
+            <div className="mb-2 text-xs font-semibold text-muted-foreground">Add PadiPlug to your phone</div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => install("ios")}
+                aria-label="Add PadiPlug to iPhone home screen"
+                title="Add to iPhone home screen"
+                className="grid h-9 w-9 place-items-center rounded-lg border bg-card text-foreground transition-colors hover:bg-secondary"
+              >
+                <Apple className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => install("android")}
+                aria-label="Install PadiPlug on Android"
+                title="Install on Android"
+                className="grid h-9 w-9 place-items-center rounded-lg border bg-card text-foreground transition-colors hover:bg-secondary"
+              >
+                <Smartphone className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </div>
+
         <div>
           <div className="mb-3 text-sm font-semibold">Marketplace</div>
           <ul className="space-y-2 text-sm text-muted-foreground">
