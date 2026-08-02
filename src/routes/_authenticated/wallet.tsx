@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, Wallet as WalletIcon, ShieldCheck, Info } from "lucide-react";
+import { ArrowDown, ArrowUp, Wallet as WalletIcon, ShieldCheck, Info, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/wallet")({
   head: () => ({ meta: [{ title: "Wallet — PadiPlug" }] }),
@@ -25,6 +25,13 @@ function WalletPage() {
     onSuccess: () => { toast.success("Wallet funded"); qc.invalidateQueries({ queryKey: ["wallet"] }); },
     onError: (e: any) => toast.error(e.message),
   });
+  const [filter, setFilter] = useState<"all" | "credits" | "debits">("all");
+  const allTxns: any[] = data?.txns ?? [];
+  const txns = allTxns.filter((t) =>
+    filter === "all" ? true : filter === "credits" ? t.amount_kobo > 0 : t.amount_kobo < 0,
+  );
+
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
