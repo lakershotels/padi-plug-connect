@@ -69,26 +69,66 @@ function WalletPage() {
       </Card>
 
       <div className="mt-8">
-        <h2 className="font-display text-xl font-bold">Transactions</h2>
-        {(!data?.txns || data.txns.length === 0) ? (
-          <div className="mt-3 rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">No transactions yet.</div>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-xl font-bold">Transaction history</h2>
+          <div className="flex gap-1 rounded-lg border bg-card p-1 text-xs">
+            {(["all", "credits", "debits"] as const).map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFilter(f)}
+                className={`rounded-md px-2.5 py-1 capitalize transition-colors ${filter === f ? "bg-secondary font-medium text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Every credit and debit on your wallet, with timestamps and reference IDs for support.
+        </p>
+        {txns.length === 0 ? (
+          <div className="mt-3 rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {allTxns.length === 0 ? "No transactions yet." : `No ${filter} to show.`}
+          </div>
         ) : (
           <ul className="mt-3 space-y-2">
-            {data.txns.map((t: any) => {
+            {txns.map((t: any) => {
               const positive = t.amount_kobo > 0;
+              const reference = t.reference ?? t.order_id ?? t.id;
               return (
-                <li key={t.id} className="flex items-center justify-between rounded-xl border bg-card p-4 shadow-card">
-                  <div className="flex items-center gap-3">
-                    <div className={`grid h-9 w-9 place-items-center rounded-full ${positive ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                <li key={t.id} className="flex items-start justify-between gap-3 rounded-xl border bg-card p-4 shadow-card">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full ${positive ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
                       {positive ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
                     </div>
-                    <div>
-                      <div className="text-sm font-medium">{t.description ?? t.type}</div>
-                      <div className="text-xs text-muted-foreground">{new Date(t.created_at).toLocaleString()}</div>
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium">{t.description ?? t.type}</div>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                        <span className="rounded-full border px-2 py-0.5 capitalize">{String(t.type).replace(/_/g, " ")}</span>
+                        <span>{new Date(t.created_at).toLocaleString()}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard?.writeText(String(reference));
+                          toast.success("Reference copied");
+                        }}
+                        className="mt-1 flex items-center gap-1 font-mono text-[11px] text-muted-foreground hover:text-foreground"
+                        title="Copy reference ID"
+                      >
+                        <Copy className="h-3 w-3" />
+                        <span className="max-w-[220px] truncate">Ref: {reference}</span>
+                      </button>
                     </div>
                   </div>
-                  <div className={`font-display font-semibold ${positive ? "text-success" : ""}`}>
-                    {positive ? "+" : ""}{formatMoney(t.amount_kobo)}
+                  <div className="text-right">
+                    <div className={`font-display font-semibold ${positive ? "text-success" : ""}`}>
+                      {positive ? "+" : ""}{formatMoney(t.amount_kobo)}
+                    </div>
+                    {t.balance_after_kobo != null && (
+                      <div className="text-[11px] text-muted-foreground">Bal {formatMoney(t.balance_after_kobo)}</div>
+                    )}
                   </div>
                 </li>
               );
