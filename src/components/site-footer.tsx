@@ -1,8 +1,34 @@
 import { Link } from "@tanstack/react-router";
+import { Apple, Smartphone } from "lucide-react";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 export function SiteFooter() {
+  const [deferred, setDeferred] = useState<any>(null);
+
+  useEffect(() => {
+    const onPrompt = (e: any) => { e.preventDefault(); setDeferred(e); };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+  }, []);
+
+  const install = async (platform: "ios" | "android") => {
+    if (deferred) {
+      deferred.prompt();
+      await deferred.userChoice;
+      setDeferred(null);
+      return;
+    }
+    toast.info(
+      platform === "ios"
+        ? "On iPhone: tap Share, then “Add to Home Screen”."
+        : "On Android: tap the browser menu, then “Install app” / “Add to Home screen”.",
+    );
+  };
+
   return (
     <footer className="mt-24 border-t border-border/60 bg-card/50">
+
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-display text-lg font-bold">
