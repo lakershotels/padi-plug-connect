@@ -1,8 +1,34 @@
 import { Link } from "@tanstack/react-router";
+import { Apple, Smartphone } from "lucide-react";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 export function SiteFooter() {
+  const [deferred, setDeferred] = useState<any>(null);
+
+  useEffect(() => {
+    const onPrompt = (e: any) => { e.preventDefault(); setDeferred(e); };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+  }, []);
+
+  const install = async (platform: "ios" | "android") => {
+    if (deferred) {
+      deferred.prompt();
+      await deferred.userChoice;
+      setDeferred(null);
+      return;
+    }
+    toast.info(
+      platform === "ios"
+        ? "On iPhone: tap Share, then “Add to Home Screen”."
+        : "On Android: tap the browser menu, then “Install app” / “Add to Home screen”.",
+    );
+  };
+
   return (
     <footer className="mt-24 border-t border-border/60 bg-card/50">
+
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-display text-lg font-bold">
@@ -12,7 +38,31 @@ export function SiteFooter() {
           <p className="mt-3 text-sm text-muted-foreground">
             The trusted African marketplace. Buy, book, and grow — with escrow protection on every order.
           </p>
+          <div className="mt-4">
+            <div className="mb-2 text-xs font-semibold text-muted-foreground">Add PadiPlug to your phone</div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => install("ios")}
+                aria-label="Add PadiPlug to iPhone home screen"
+                title="Add to iPhone home screen"
+                className="grid h-9 w-9 place-items-center rounded-lg border bg-card text-foreground transition-colors hover:bg-secondary"
+              >
+                <Apple className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => install("android")}
+                aria-label="Install PadiPlug on Android"
+                title="Install on Android"
+                className="grid h-9 w-9 place-items-center rounded-lg border bg-card text-foreground transition-colors hover:bg-secondary"
+              >
+                <Smartphone className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </div>
+
         <div>
           <div className="mb-3 text-sm font-semibold">Marketplace</div>
           <ul className="space-y-2 text-sm text-muted-foreground">
