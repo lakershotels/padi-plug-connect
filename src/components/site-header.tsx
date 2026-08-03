@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, Bell, User as UserIcon, Menu, MessageSquare, Wallet as WalletIcon } from "lucide-react";
+import { Search, ShoppingBag, Bell, User as UserIcon, Menu, MessageSquare, Wallet as WalletIcon, Download } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,8 @@ import { getUnreadTotal } from "@/lib/chat.functions";
 import { getWalletBalance } from "@/lib/wallet.functions";
 import { isAdmin as isAdminFn } from "@/lib/admin.functions";
 import { formatMoney } from "@/lib/money";
+import { usePwaInstall } from "@/hooks/use-pwa-install";
+
 
 function IconBadge({ count }: { count: number }) {
   if (!count) return null;
