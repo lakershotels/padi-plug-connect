@@ -1,30 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Apple, Smartphone } from "lucide-react";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { Download, Apple, Smartphone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { usePwaInstall } from "@/hooks/use-pwa-install";
 
 export function SiteFooter() {
-  const [deferred, setDeferred] = useState<any>(null);
-
-  useEffect(() => {
-    const onPrompt = (e: any) => { e.preventDefault(); setDeferred(e); };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
-  }, []);
-
-  const install = async (platform: "ios" | "android") => {
-    if (deferred) {
-      deferred.prompt();
-      await deferred.userChoice;
-      setDeferred(null);
-      return;
-    }
-    toast.info(
-      platform === "ios"
-        ? "On iPhone: tap Share, then “Add to Home Screen”."
-        : "On Android: tap the browser menu, then “Install app” / “Add to Home screen”.",
-    );
-  };
+  const { isInstallable, triggerInstall } = usePwaInstall();
 
   return (
     <footer className="mt-24 border-t border-border/60 bg-card/50">
@@ -40,10 +20,19 @@ export function SiteFooter() {
           </p>
           <div className="mt-4">
             <div className="mb-2 text-xs font-semibold text-muted-foreground">Add PadiPlug to your phone</div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size="sm"
+                onClick={triggerInstall}
+                className="gap-2 rounded-full bg-gradient-hero text-primary-foreground shadow-elevated hover:opacity-95"
+                aria-label="Install PadiPlug on your home screen"
+              >
+                <Download className="h-4 w-4" />
+                Install PadiPlug
+              </Button>
               <button
                 type="button"
-                onClick={() => install("ios")}
+                onClick={() => triggerInstall()}
                 aria-label="Add PadiPlug to iPhone home screen"
                 title="Add to iPhone home screen"
                 className="grid h-9 w-9 place-items-center rounded-lg border bg-card text-foreground transition-colors hover:bg-secondary"
@@ -52,7 +41,7 @@ export function SiteFooter() {
               </button>
               <button
                 type="button"
-                onClick={() => install("android")}
+                onClick={() => triggerInstall()}
                 aria-label="Install PadiPlug on Android"
                 title="Install on Android"
                 className="grid h-9 w-9 place-items-center rounded-lg border bg-card text-foreground transition-colors hover:bg-secondary"
@@ -60,6 +49,11 @@ export function SiteFooter() {
                 <Smartphone className="h-4 w-4" />
               </button>
             </div>
+            {!isInstallable && (
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Tap “Install PadiPlug” for the fastest home-screen shortcut. If your browser doesn't show a prompt, follow the iOS/Android steps above.
+              </p>
+            )}
           </div>
         </div>
 
