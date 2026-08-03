@@ -189,6 +189,13 @@ export function SiteHeader() {
             <Link to="/deals" className="rounded-md px-3 py-2 hover:bg-muted">Deals</Link>
             <Link to="/sell" className="rounded-md px-3 py-2 hover:bg-muted">Sell on PadiPlug</Link>
             <Link to="/plans" className="rounded-md px-3 py-2 hover:bg-muted">Plans & Ads</Link>
+            <button
+              type="button"
+              onClick={() => { triggerInstall(); setMobileOpen(false); }}
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-left font-medium hover:bg-muted"
+            >
+              <Download className="h-4 w-4" /> Install PadiPlug
+            </button>
             {!user && (
               <Link to="/auth" className="rounded-md bg-primary px-3 py-2 text-center text-primary-foreground">
                 Sign in / Join
