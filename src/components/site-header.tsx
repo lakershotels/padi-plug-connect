@@ -150,6 +150,9 @@ export function SiteHeader() {
                   <DropdownMenuItem asChild><Link to="/vendor">Vendor console</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/artisan">Artisan console</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/plans">Plans & Ads</Link></DropdownMenuItem>
+                  <DropdownMenuItem onClick={triggerInstall} className="gap-2">
+                    <Download className="h-4 w-4" /> Install PadiPlug
+                  </DropdownMenuItem>
                   {showAdmin && (
                     <DropdownMenuItem asChild><Link to="/admin">Admin</Link></DropdownMenuItem>
                   )}
