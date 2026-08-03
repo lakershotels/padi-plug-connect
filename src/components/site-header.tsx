@@ -170,7 +170,7 @@ export function SiteHeader() {
             </div>
           )}
 
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen((o) => !o)}>
+          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu" onClick={() => setMobileOpen((o) => !o)}>
             <Menu className="h-5 w-5" />
           </Button>
         </div>
