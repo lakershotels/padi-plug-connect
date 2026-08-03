@@ -31,6 +31,7 @@ function IconBadge({ count }: { count: number }) {
 
 export function SiteHeader() {
   const { user, loading } = useSession();
+  const { triggerInstall } = usePwaInstall();
   const [mobileOpen, setMobileOpen] = useState(false);
   const qc = useQueryClient();
 
