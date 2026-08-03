@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getAdminOverview, setVendorVerification, setArtisanVerification, isAdmin } from "@/lib/admin.functions";
+import { getAdminOverview, setVendorVerification, setArtisanVerification, isAdmin, listUsersWithRoles, setUserRole } from "@/lib/admin.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatMoney } from "@/lib/money";
-import { ShieldCheck, Users, Store, Wrench, Package, ShoppingBag, AlertTriangle, DollarSign } from "lucide-react";
+import { ShieldCheck, Users, Store, Wrench, Package, ShoppingBag, AlertTriangle, DollarSign, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -23,6 +23,17 @@ function AdminPage() {
     queryKey: ["adminOverview"],
     queryFn: () => getAdminOverview(),
     enabled,
+  });
+  const { data: users } = useQuery({
+    queryKey: ["adminUsers"],
+    queryFn: () => listUsersWithRoles(),
+    enabled,
+  });
+  const roleFn = useServerFn(setUserRole);
+  const roleMut = useMutation({
+    mutationFn: (v: { userId: string; role: string; grant: boolean }) => roleFn({ data: v as any }),
+    onSuccess: () => { toast.success("Roles updated"); qc.invalidateQueries({ queryKey: ["adminUsers"] }); },
+    onError: (e: any) => toast.error(e.message),
   });
 
   const setV = useServerFn(setVendorVerification);
@@ -59,7 +70,9 @@ function AdminPage() {
     { icon: Package, label: "Products", value: data.counts.products },
     { icon: ShoppingBag, label: "Recent orders", value: data.counts.orders },
     { icon: AlertTriangle, label: "Disputes", value: data.counts.disputes },
-    { icon: DollarSign, label: "GMV (recent)", value: formatMoney(data.counts.gmv) },
+    { icon: DollarSign, label: "GMV (all time)", value: formatMoney(data.counts.gmv) },
+    { icon: Lock, label: "Held in escrow", value: formatMoney(data.counts.inEscrow) },
+    { icon: DollarSign, label: "Commission earned", value: formatMoney(data.counts.revenue) },
   ];
 
   return (
@@ -140,6 +153,41 @@ function AdminPage() {
                   <div className="text-sm">{formatMoney(o.total_kobo)}</div>
                 </div>
                 <Badge variant="secondary">{o.status}</Badge>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="font-display text-xl font-bold">Users & roles</h2>
+        <p className="text-xs text-muted-foreground">Admin roles can only be changed by a super admin.</p>
+        <Card className="mt-3 overflow-hidden">
+          <ul className="divide-y">
+            {(users ?? []).length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">No users yet.</li>}
+            {(users ?? []).map((u: any) => (
+              <li key={u.id} className="flex flex-wrap items-center gap-3 p-4">
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-medium">{u.full_name ?? "Unnamed user"}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Wallet {formatMoney(u.wallet?.balance_kobo ?? 0)} · Escrow {formatMoney(u.wallet?.escrow_kobo ?? 0)}
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {u.roles.length === 0 && <span className="text-xs text-muted-foreground">no roles</span>}
+                    {u.roles.map((r: string) => (
+                      <Badge key={r} variant="secondary" className="capitalize">{r.replace(/_/g, " ")}</Badge>
+                    ))}
+                  </div>
+                </div>
+                {check?.isSuperAdmin && (
+                  <div className="flex flex-wrap gap-1">
+                    {u.roles.includes("admin") ? (
+                      <Button size="sm" variant="ghost" onClick={() => roleMut.mutate({ userId: u.id, role: "admin", grant: false })}>Revoke admin</Button>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={() => roleMut.mutate({ userId: u.id, role: "admin", grant: true })}>Make admin</Button>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
