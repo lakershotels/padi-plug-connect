@@ -191,72 +191,164 @@ export const listDisputes = createServerFn({ method: "GET" })
 
 export const resolveDispute = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => ({
-    disputeId: String(d.disputeId),
-    decision: String(d.decision) as "refund" | "release",
-    notes: d.notes ? String(d.notes) : "",
-  }))
+  .inputValidator((d) =>
+    z
+      .object({
+        disputeId: z.string().uuid(),
+        decision: z.enum(["refund", "release", "split", "reject"]),
+        splitReleasePercent: z.number().int().min(0).max(100).optional(),
+        notes: z.string().max(2000).optional(),
+      })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
 
     const { data: dispute } = await db.from("disputes").select("*").eq("id", data.disputeId).maybeSingle();
     if (!dispute) throw new Error("Dispute not found");
-    if (dispute.status !== "open" && dispute.status !== "investigating") {
-      throw new Error("Dispute already resolved");
-    }
+    if (dispute.status !== "open" && dispute.status !== "investigating") throw new Error("Dispute already resolved");
+
     const { data: order } = await db.from("orders").select("*").eq("id", dispute.order_id).maybeSingle();
     if (!order) throw new Error("Order not found");
 
-    let providerUserId: string | null = null;
-    if (order.vendor_id) {
-      const { data: v } = await db.from("vendors").select("owner_id").eq("id", order.vendor_id).maybeSingle();
-      providerUserId = v?.owner_id ?? null;
-    } else if (order.artisan_id) {
-      const { data: a } = await db.from("artisans").select("owner_id").eq("id", order.artisan_id).maybeSingle();
-      providerUserId = a?.owner_id ?? null;
-    }
+    const { data: escrow } = await db
+      .from("escrow_transactions")
+      .select("*")
+      .eq("order_id", order.id)
+      .eq("status", "held")
+      .maybeSingle();
+    if (!escrow) throw new Error("No escrow is held for this order");
 
-    const customerId = order.customer_id as string;
-    const total = order.total_kobo as number;
-    const commission = (order.commission_kobo as number) ?? 0;
+    const total = escrow.amount_kobo as number;
+    // "reject" means the dispute has no merit -> full release to the seller.
+    const releasePercent =
+      data.decision === "refund" ? 0 : data.decision === "split" ? (data.splitReleasePercent ?? 50) : 100;
+    const releaseKobo = Math.floor((total * releasePercent) / 100);
+    const refundKobo = total - releaseKobo;
 
-    const { data: cw } = await db.from("wallets").select("balance_kobo,escrow_kobo").eq("user_id", customerId).maybeSingle();
-    const newEscrow = Math.max(0, (cw?.escrow_kobo ?? 0) - total);
+    const { error } = await db.rpc("escrow_settle", {
+      _order_id: order.id,
+      _release_kobo: releaseKobo,
+      _refund_kobo: refundKobo,
+      _actor_id: context.userId,
+      _reason: data.notes || `Admin decision: ${data.decision}`,
+    });
+    if (error) throw new Error(error.message);
 
-    if (data.decision === "refund") {
-      const newBalance = (cw?.balance_kobo ?? 0) + total;
-      await db.from("wallets").update({ balance_kobo: newBalance, escrow_kobo: newEscrow, updated_at: new Date().toISOString() }).eq("user_id", customerId);
-      await db.from("wallet_transactions").insert({
-        user_id: customerId, type: "refund", amount_kobo: total, balance_after_kobo: newBalance,
-        description: "Dispute refund", order_id: order.id,
-      });
-      await db.from("orders").update({ status: "resolved_refund", completed_at: new Date().toISOString() }).eq("id", order.id);
-      await db.from("disputes").update({ status: "resolved_refund", admin_notes: data.notes }).eq("id", dispute.id);
-      await db.from("notifications").insert([
-        { user_id: customerId, title: "Dispute resolved — refunded", body: "Funds returned to your wallet.", link: `/orders/${order.id}` },
-        ...(providerUserId ? [{ user_id: providerUserId, title: "Dispute resolved — refunded", body: "Escrow was refunded to the customer.", link: `/orders/${order.id}` }] : []),
-      ] as any);
-    } else {
-      await db.from("wallets").update({ escrow_kobo: newEscrow, updated_at: new Date().toISOString() }).eq("user_id", customerId);
-      if (!providerUserId) throw new Error("Provider not found");
-      await db.from("wallets").upsert({ user_id: providerUserId }, { onConflict: "user_id" });
-      const { data: pw } = await db.from("wallets").select("balance_kobo").eq("user_id", providerUserId).maybeSingle();
-      const payout = total - commission;
-      const newPBal = (pw?.balance_kobo ?? 0) + payout;
-      await db.from("wallets").update({ balance_kobo: newPBal, updated_at: new Date().toISOString() }).eq("user_id", providerUserId);
-      await db.from("wallet_transactions").insert([
-        { user_id: customerId, type: "release", amount_kobo: -total, description: "Dispute release to seller", order_id: order.id },
-        { user_id: providerUserId, type: "release", amount_kobo: payout, balance_after_kobo: newPBal, description: "Dispute release payout", order_id: order.id },
-        { user_id: providerUserId, type: "commission", amount_kobo: -commission, description: "PadiPlug commission", order_id: order.id },
-      ]);
-      await db.from("orders").update({ status: "resolved_release", completed_at: new Date().toISOString() }).eq("id", order.id);
-      await db.from("disputes").update({ status: "resolved_release", admin_notes: data.notes }).eq("id", dispute.id);
-      await db.from("notifications").insert([
-        { user_id: customerId, title: "Dispute resolved — released", body: "Escrow was released to the seller.", link: `/orders/${order.id}` },
-        { user_id: providerUserId, title: "Dispute resolved — released", body: "Escrow released to your wallet.", link: `/orders/${order.id}` },
-      ]);
-    }
+    const disputeStatus = refundKobo > 0 && releaseKobo === 0 ? "resolved_refund" : "resolved_release";
+    await db
+      .from("disputes")
+      .update({
+        status: disputeStatus as any,
+        resolution: data.decision,
+        admin_notes: data.notes ?? null,
+        resolved_at: new Date().toISOString(),
+      })
+      .eq("id", dispute.id);
+
+    await db.from("admin_actions").insert({
+      admin_id: context.userId,
+      action: `dispute.${data.decision}`,
+      target_type: "dispute",
+      target_id: dispute.id,
+      notes: data.notes ?? null,
+    });
+
+    const summary =
+      data.decision === "split"
+        ? `Split settlement: ${releasePercent}% to seller, ${100 - releasePercent}% refunded.`
+        : data.decision === "refund"
+          ? "Escrow refunded to the customer."
+          : data.decision === "reject"
+            ? "Dispute rejected — escrow released to the seller."
+            : "Escrow released to the seller.";
+
+    const notes: any[] = [{ user_id: order.customer_id, title: "Dispute resolved", body: summary, link: `/orders/${order.id}` }];
+    if (escrow.seller_id) notes.push({ user_id: escrow.seller_id, title: "Dispute resolved", body: summary, link: `/orders/${order.id}` });
+    await db.from("notifications").insert(notes);
+
+    return { ok: true, releaseKobo, refundKobo };
+  });
+
+export const listEscrowTransactions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: any) => ({ search: d?.search ? String(d.search) : "" }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
+    await db.rpc("escrow_sweep_overdue");
+    let q = db
+      .from("escrow_transactions")
+      .select("*,orders(id,kind,status,stage,total_kobo,created_at,vendors(store_name),artisans(display_name))")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data.search) q = q.or(`escrow_ref.ilike.%${data.search}%,order_id.eq.${data.search}`);
+    const { data: rows } = await q;
+    const list = rows ?? [];
+    const userIds = Array.from(new Set(list.flatMap((r: any) => [r.customer_id, r.seller_id].filter(Boolean))));
+    const [{ data: profs }, { data: wallets }] = await Promise.all([
+      db.from("profiles").select("id,full_name,suspended_at").in("id", userIds),
+      db.from("wallets").select("user_id,balance_kobo,escrow_kobo,pending_kobo").in("user_id", userIds),
+    ]);
+    const pMap = new Map((profs ?? []).map((p: any) => [p.id, p]));
+    const wMap = new Map((wallets ?? []).map((w: any) => [w.user_id, w]));
+    return list.map((r: any) => ({
+      ...r,
+      customer: pMap.get(r.customer_id) ?? null,
+      seller: r.seller_id ? (pMap.get(r.seller_id) ?? null) : null,
+      customer_wallet: wMap.get(r.customer_id) ?? null,
+      seller_wallet: r.seller_id ? (wMap.get(r.seller_id) ?? null) : null,
+    }));
+  });
+
+export const getDisputeReport = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ disputeId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
+    const { data: dispute } = await db.from("disputes").select("*").eq("id", data.disputeId).maybeSingle();
+    if (!dispute) throw new Error("Dispute not found");
+    const [{ data: order }, { data: escrow }, { data: logs }] = await Promise.all([
+      db.from("orders").select("*,order_items(*),vendors(store_name),artisans(display_name)").eq("id", dispute.order_id).maybeSingle(),
+      db.from("escrow_transactions").select("*").eq("order_id", dispute.order_id).maybeSingle(),
+      db.from("audit_logs").select("*").eq("entity_id", dispute.order_id).order("created_at", { ascending: true }),
+    ]);
+    const ids = [order?.customer_id, escrow?.seller_id].filter(Boolean);
+    const { data: profs } = await db.from("profiles").select("id,full_name,phone,city").in("id", ids);
+    return { dispute, order, escrow, timeline: logs ?? [], parties: profs ?? [], generated_at: new Date().toISOString() };
+  });
+
+export const setUserSuspended = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ userId: z.string().uuid(), suspended: z.boolean(), reason: z.string().max(500).optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    if (data.userId === context.userId) throw new Error("You cannot suspend yourself");
+    const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
+    await db
+      .from("profiles")
+      .update({
+        suspended_at: data.suspended ? new Date().toISOString() : null,
+        suspension_reason: data.suspended ? (data.reason ?? "Policy violation") : null,
+      })
+      .eq("id", data.userId);
+    await db.from("admin_actions").insert({
+      admin_id: context.userId,
+      action: data.suspended ? "user.suspended" : "user.reinstated",
+      target_type: "user",
+      target_id: data.userId,
+      notes: data.reason ?? null,
+    });
+    await db.from("notifications").insert({
+      user_id: data.userId,
+      title: data.suspended ? "Account suspended" : "Account reinstated",
+      body: data.suspended ? (data.reason ?? "Contact support for details.") : "You can trade on PadiPlug again.",
+      link: "/dashboard",
+    });
     return { ok: true };
   });
 
