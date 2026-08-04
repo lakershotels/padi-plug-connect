@@ -169,7 +169,7 @@ export const listDisputes = createServerFn({ method: "GET" })
     const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
     const { data: disputes } = await db
       .from("disputes")
-      .select("id,order_id,opened_by,reason,evidence_urls,status,admin_notes,created_at,updated_at")
+      .select("id,order_id,opened_by,reason,evidence_urls,status,admin_notes,resolution,seller_response,resolved_at,created_at,updated_at")
       .order("created_at", { ascending: false });
     const list = disputes ?? [];
     if (list.length === 0) return [];
