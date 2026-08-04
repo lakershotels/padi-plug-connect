@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       artisans: {
         Row: {
           avatar_url: string | null
@@ -89,6 +119,36 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          meta: Json
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -161,6 +221,9 @@ export type Database = {
           opened_by: string
           order_id: string
           reason: string
+          resolution: string | null
+          resolved_at: string | null
+          seller_response: string | null
           status: Database["public"]["Enums"]["dispute_status"]
           updated_at: string
         }
@@ -172,6 +235,9 @@ export type Database = {
           opened_by: string
           order_id: string
           reason: string
+          resolution?: string | null
+          resolved_at?: string | null
+          seller_response?: string | null
           status?: Database["public"]["Enums"]["dispute_status"]
           updated_at?: string
         }
@@ -183,6 +249,9 @@ export type Database = {
           opened_by?: string
           order_id?: string
           reason?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          seller_response?: string | null
           status?: Database["public"]["Enums"]["dispute_status"]
           updated_at?: string
         }
@@ -191,6 +260,62 @@ export type Database = {
             foreignKeyName: "disputes_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escrow_transactions: {
+        Row: {
+          amount_kobo: number
+          commission_kobo: number
+          created_at: string
+          customer_id: string
+          escrow_ref: string
+          id: string
+          order_id: string
+          refunded_kobo: number
+          released_at: string | null
+          released_kobo: number
+          seller_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_kobo: number
+          commission_kobo?: number
+          created_at?: string
+          customer_id: string
+          escrow_ref: string
+          id?: string
+          order_id: string
+          refunded_kobo?: number
+          released_at?: string | null
+          released_kobo?: number
+          seller_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_kobo?: number
+          commission_kobo?: number
+          created_at?: string
+          customer_id?: string
+          escrow_ref?: string
+          id?: string
+          order_id?: string
+          refunded_kobo?: number
+          released_at?: string | null
+          released_kobo?: number
+          seller_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -360,18 +485,23 @@ export type Database = {
       }
       orders: {
         Row: {
+          accepted_at: string | null
           artisan_id: string | null
+          cancelled_at: string | null
           commission_kobo: number
           completed_at: string | null
           created_at: string
           currency: string
           customer_id: string
+          delivery_deadline_at: string | null
           id: string
           kind: string
           notes: string | null
           scheduled_at: string | null
           service_id: string | null
+          shipped_at: string | null
           shipping_address: Json | null
+          stage: string
           status: Database["public"]["Enums"]["order_status"]
           subtotal_kobo: number
           total_kobo: number
@@ -379,18 +509,23 @@ export type Database = {
           vendor_id: string | null
         }
         Insert: {
+          accepted_at?: string | null
           artisan_id?: string | null
+          cancelled_at?: string | null
           commission_kobo?: number
           completed_at?: string | null
           created_at?: string
           currency?: string
           customer_id: string
+          delivery_deadline_at?: string | null
           id?: string
           kind: string
           notes?: string | null
           scheduled_at?: string | null
           service_id?: string | null
+          shipped_at?: string | null
           shipping_address?: Json | null
+          stage?: string
           status?: Database["public"]["Enums"]["order_status"]
           subtotal_kobo: number
           total_kobo: number
@@ -398,18 +533,23 @@ export type Database = {
           vendor_id?: string | null
         }
         Update: {
+          accepted_at?: string | null
           artisan_id?: string | null
+          cancelled_at?: string | null
           commission_kobo?: number
           completed_at?: string | null
           created_at?: string
           currency?: string
           customer_id?: string
+          delivery_deadline_at?: string | null
           id?: string
           kind?: string
           notes?: string | null
           scheduled_at?: string | null
           service_id?: string | null
+          shipped_at?: string | null
           shipping_address?: Json | null
+          stage?: string
           status?: Database["public"]["Enums"]["order_status"]
           subtotal_kobo?: number
           total_kobo?: number
@@ -439,6 +579,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payments: {
+        Row: {
+          amount_kobo: number
+          created_at: string
+          currency: string
+          id: string
+          meta: Json
+          method: string
+          provider: string
+          reference: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_kobo: number
+          created_at?: string
+          currency?: string
+          id?: string
+          meta?: Json
+          method?: string
+          provider?: string
+          reference: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_kobo?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          meta?: Json
+          method?: string
+          provider?: string
+          reference?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       plan_purchases: {
         Row: {
@@ -567,6 +749,8 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
+          suspended_at: string | null
+          suspension_reason: string | null
           updated_at: string
         }
         Insert: {
@@ -578,6 +762,8 @@ export type Database = {
           full_name?: string | null
           id: string
           phone?: string | null
+          suspended_at?: string | null
+          suspension_reason?: string | null
           updated_at?: string
         }
         Update: {
@@ -589,9 +775,97 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          suspended_at?: string | null
+          suspension_reason?: string | null
           updated_at?: string
         }
         Relationships: []
+      }
+      receipts: {
+        Row: {
+          amount_kobo: number
+          created_at: string
+          id: string
+          kind: string
+          meta: Json
+          order_id: string | null
+          payment_id: string | null
+          receipt_no: string
+          user_id: string
+        }
+        Insert: {
+          amount_kobo: number
+          created_at?: string
+          id?: string
+          kind: string
+          meta?: Json
+          order_id?: string | null
+          payment_id?: string | null
+          receipt_no?: string
+          user_id: string
+        }
+        Update: {
+          amount_kobo?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          order_id?: string | null
+          payment_id?: string | null
+          receipt_no?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      refunds: {
+        Row: {
+          amount_kobo: number
+          created_at: string
+          id: string
+          order_id: string | null
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_kobo: number
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_kobo?: number
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -868,17 +1142,81 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawals: {
+        Row: {
+          admin_notes: string | null
+          amount_kobo: number
+          created_at: string
+          destination: Json
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount_kobo: number
+          created_at?: string
+          destination?: Json
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount_kobo?: number
+          created_at?: string
+          destination?: Json
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      escrow_hold: {
+        Args: {
+          _amount_kobo: number
+          _commission_kobo: number
+          _customer_id: string
+          _order_id: string
+          _seller_id: string
+        }
+        Returns: Json
+      }
+      escrow_settle: {
+        Args: {
+          _actor_id: string
+          _order_id: string
+          _reason: string
+          _refund_kobo: number
+          _release_kobo: number
+        }
+        Returns: Json
+      }
+      escrow_sweep_overdue: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      wallet_fund: {
+        Args: {
+          _amount_kobo: number
+          _description: string
+          _method: string
+          _reference: string
+          _user_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {
