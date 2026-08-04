@@ -315,7 +315,7 @@ export const getDisputeReport = createServerFn({ method: "GET" })
       db.from("escrow_transactions").select("*").eq("order_id", dispute.order_id).maybeSingle(),
       db.from("audit_logs").select("*").eq("entity_id", dispute.order_id).order("created_at", { ascending: true }),
     ]);
-    const ids = [order?.customer_id, escrow?.seller_id].filter(Boolean);
+    const ids = [order?.customer_id, escrow?.seller_id].filter(Boolean) as string[];
     const { data: profs } = await db.from("profiles").select("id,full_name,phone,city").in("id", ids);
     return { dispute, order, escrow, timeline: logs ?? [], parties: profs ?? [], generated_at: new Date().toISOString() };
   });
