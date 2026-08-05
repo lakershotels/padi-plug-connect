@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatMoney } from "@/lib/money";
 import { ShieldCheck, Users, Store, Wrench, Package, ShoppingBag, AlertTriangle, DollarSign, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { AdminHeroManager } from "@/components/admin-hero-manager";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin dashboard — PadiPlug" }] }),
