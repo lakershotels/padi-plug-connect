@@ -33,6 +33,8 @@ export function SiteHeader() {
   const { user, loading } = useSession();
   const { triggerInstall } = usePwaInstall();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const qc = useQueryClient();
 
   const { data: unread } = useQuery({
@@ -107,9 +109,27 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/marketplace" aria-label="Search"><Search className="h-5 w-5" /></Link>
+          <form
+            className="relative hidden lg:block"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = searchTerm.trim();
+              if (q) window.location.assign(`/search?q=${encodeURIComponent(q)}`);
+            }}
+          >
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search products, services, sellers…"
+              aria-label="Search PadiPlug"
+              className="h-9 w-64 rounded-full border border-border/70 bg-secondary/40 pl-9 pr-3 text-sm outline-none focus:border-primary/50"
+            />
+          </form>
+          <Button variant="ghost" size="icon" asChild className="lg:hidden">
+            <Link to="/search" search={{ q: "" }} aria-label="Search"><Search className="h-5 w-5" /></Link>
           </Button>
+
 
           {!loading && user ? (
             <>

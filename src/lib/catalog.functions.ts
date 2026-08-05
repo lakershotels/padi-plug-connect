@@ -106,3 +106,46 @@ export const getVendor = createServerFn({ method: "GET" })
     const { data: products } = await supa.from("products").select("*").eq("vendor_id", vendor.id).eq("is_active", true);
     return { vendor, products: products ?? [] };
   });
+
+export const searchAll = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ q: z.string().max(120) }).parse(d))
+  .handler(async ({ data }) => {
+    const supa = pub();
+    const term = data.q.trim();
+    if (!term) return { products: [], services: [], vendors: [], artisans: [], categories: [] };
+    const like = `%${term}%`;
+
+    const [products, services, vendors, artisans, categories] = await Promise.all([
+      supa
+        .from("products")
+        .select("id,title,slug,description,tags,price_kobo,compare_at_kobo,images,rating_avg,rating_count,vendor_id,vendors(store_name,slug,city,verification)")
+        .eq("is_active", true)
+        .or(`title.ilike.${like},description.ilike.${like}`)
+        .limit(40),
+      supa
+        .from("services")
+        .select("id,title,description,price_from_kobo,images,artisan_id,artisans(display_name,slug,city,profession,verification)")
+        .eq("is_active", true)
+        .or(`title.ilike.${like},description.ilike.${like}`)
+        .limit(40),
+      supa
+        .from("vendors")
+        .select("id,slug,store_name,tagline,logo_url,city,verification,rating_avg,rating_count")
+        .or(`store_name.ilike.${like},tagline.ilike.${like},description.ilike.${like},city.ilike.${like}`)
+        .limit(20),
+      supa
+        .from("artisans")
+        .select("id,slug,display_name,headline,avatar_url,profession,city,verification,rating_avg,rating_count")
+        .or(`display_name.ilike.${like},profession.ilike.${like},headline.ilike.${like},bio.ilike.${like},city.ilike.${like}`)
+        .limit(20),
+      supa.from("categories").select("id,slug,name,kind,icon").ilike("name", like).limit(12),
+    ]);
+
+    return {
+      products: products.data ?? [],
+      services: services.data ?? [],
+      vendors: vendors.data ?? [],
+      artisans: artisans.data ?? [],
+      categories: categories.data ?? [],
+    };
+  });
