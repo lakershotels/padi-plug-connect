@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   getOrder, confirmDone, openDispute, markFulfilled, submitReview, addDisputeEvidence, getMyDispute,
-  acceptOrder, cancelOrder, respondToDispute,
+  acceptOrder, cancelOrder, respondToDispute, markReadyToShip,
 } from "@/lib/orders.functions";
 import { ImageUploader } from "@/components/image-uploader";
 import { formatMoney } from "@/lib/money";
@@ -30,7 +30,8 @@ export const Route = createFileRoute("/_authenticated/orders/$id")({
 const STAGES: { key: string; label: string }[] = [
   { key: "pending_payment", label: "Pending payment" },
   { key: "awaiting_acceptance", label: "Funds in escrow — awaiting seller" },
-  { key: "processing", label: "Seller accepted · processing" },
+  { key: "processing", label: "Seller accepted · preparing your order" },
+  { key: "ready_to_ship", label: "Packed & ready for shipment" },
   { key: "waiting_confirmation", label: "Delivered — waiting for your confirmation" },
   { key: "completed", label: "Escrow released · completed" },
 ];
@@ -46,6 +47,7 @@ function OrderDetail() {
   const fulfillFn = useServerFn(markFulfilled);
   const acceptFn = useServerFn(acceptOrder);
   const cancelFn = useServerFn(cancelOrder);
+  const readyFn = useServerFn(markReadyToShip);
   const reviewFn = useServerFn(submitReview);
 
   const [reason, setReason] = useState("");
@@ -65,6 +67,7 @@ function OrderDetail() {
   const fulfillMut = useMutation({ mutationFn: () => fulfillFn({ data: { orderId: id } }), onSuccess: () => { toast.success("Customer notified"); invalidate(); }, onError: (e: any) => toast.error(e.message) });
   const acceptMut = useMutation({ mutationFn: () => acceptFn({ data: { orderId: id } }), onSuccess: () => { toast.success("Order accepted"); invalidate(); }, onError: (e: any) => toast.error(e.message) });
   const cancelMut = useMutation({ mutationFn: () => cancelFn({ data: { orderId: id, reason: "Seller cancelled" } }), onSuccess: () => { toast.success("Order cancelled — customer refunded"); invalidate(); }, onError: (e: any) => toast.error(e.message) });
+  const readyMut = useMutation({ mutationFn: () => readyFn({ data: { orderId: id } }), onSuccess: () => { toast.success("Marked ready for shipment"); invalidate(); }, onError: (e: any) => toast.error(e.message) });
   const reviewMut = useMutation({ mutationFn: () => reviewFn({ data: { orderId: id, rating, comment } }), onSuccess: () => { toast.success("Thanks for the review!"); setReviewOpen(false); }, onError: (e: any) => toast.error(e.message) });
 
   if (isPending) return <div className="py-24 text-center text-muted-foreground">Loading…</div>;
@@ -76,7 +79,8 @@ function OrderDetail() {
   const stage: string = o.stage ?? "awaiting_acceptance";
   const canConfirm = isCustomer && ["paid_escrow", "fulfilled"].includes(o.status);
   const canAccept = isSeller && stage === "awaiting_acceptance" && o.status === "paid_escrow";
-  const canFulfill = isSeller && o.status === "paid_escrow" && stage !== "awaiting_acceptance";
+  const canReady = isSeller && o.status === "paid_escrow" && stage === "processing";
+  const canFulfill = isSeller && o.status === "paid_escrow" && ["processing", "ready_to_ship"].includes(stage);
   const canCancel = isSeller && o.status === "paid_escrow";
   const isReleased = ["released", "completed", "resolved_release"].includes(o.status);
   const stageIndex = STAGES.findIndex((s) => s.key === stage);
@@ -134,7 +138,7 @@ function OrderDetail() {
                   disabled={doneMut.isPending}
                   onClick={() => doneMut.mutate()}
                 >
-                  <CheckCircle2 className="mr-2 h-5 w-5" />DONE — release payment
+                  <CheckCircle2 className="mr-2 h-5 w-5" />DONE — I received it, release payment
                 </Button>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -154,11 +158,16 @@ function OrderDetail() {
               </div>
             )}
 
-            {(canAccept || canFulfill || canCancel) && (
+            {(canAccept || canReady || canFulfill || canCancel) && (
               <div className="mt-5 flex flex-wrap gap-3">
                 {canAccept && (
                   <Button onClick={() => acceptMut.mutate()} disabled={acceptMut.isPending}>
                     <CheckCircle2 className="mr-2 h-5 w-5" />Accept order
+                  </Button>
+                )}
+                {canReady && (
+                  <Button variant="secondary" onClick={() => readyMut.mutate()} disabled={readyMut.isPending}>
+                    <PackageCheck className="mr-2 h-5 w-5" />Mark ready for shipment
                   </Button>
                 )}
                 {canFulfill && (
