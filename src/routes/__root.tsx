@@ -57,6 +57,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Shop verified African vendors, book trusted artisans, and pay safely with escrow. PadiPlug protects every order until you say 'done'." },
       { name: "theme-color", content: "#1f5a3d" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "theme-color", content: "#faf7f2", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#101b18", media: "(prefers-color-scheme: dark)" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "PadiPlug" },
