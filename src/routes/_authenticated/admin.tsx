@@ -159,6 +159,8 @@ function AdminPage() {
         </Card>
       </section>
 
+      <AdminHeroManager />
+
       <section className="mt-8">
         <h2 className="font-display text-xl font-bold">Users & roles</h2>
         <p className="text-xs text-muted-foreground">Admin roles can only be changed by a super admin.</p>
