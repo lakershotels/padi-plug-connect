@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SellRouteImport } from './routes/sell'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as DealsRouteImport } from './routes/deals'
@@ -50,6 +51,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SellRoute = SellRouteImport.update({
   id: '/sell',
   path: '/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/deals': typeof DealsRoute
   '/marketplace': typeof MarketplaceRoute
   '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/deals': typeof DealsRoute
   '/marketplace': typeof MarketplaceRoute
   '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/deals': typeof DealsRoute
   '/marketplace': typeof MarketplaceRoute
   '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
     | '/deals'
     | '/marketplace'
     | '/privacy'
+    | '/search'
     | '/sell'
     | '/sitemap.xml'
     | '/terms'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/deals'
     | '/marketplace'
     | '/privacy'
+    | '/search'
     | '/sell'
     | '/sitemap.xml'
     | '/terms'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/deals'
     | '/marketplace'
     | '/privacy'
+    | '/search'
     | '/sell'
     | '/sitemap.xml'
     | '/terms'
@@ -357,6 +369,7 @@ export interface RootRouteChildren {
   DealsRoute: typeof DealsRoute
   MarketplaceRoute: typeof MarketplaceRoute
   PrivacyRoute: typeof PrivacyRoute
+  SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/sell'
       fullPath: '/sell'
       preLoaderRoute: typeof SellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -643,6 +663,7 @@ const rootRouteChildren: RootRouteChildren = {
   DealsRoute: DealsRoute,
   MarketplaceRoute: MarketplaceRoute,
   PrivacyRoute: PrivacyRoute,
+  SearchRoute: SearchRoute,
   SellRoute: SellRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
