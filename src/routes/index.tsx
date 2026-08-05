@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { ShieldCheck, Sparkles, Search, ArrowRight, Star, MapPin, BadgeCheck, TrendingUp, Handshake, Wallet, Rocket } from "lucide-react";
-import heroImg from "@/assets/hero.jpg";
+import { HeroAdCarousel } from "@/components/hero-ad-carousel";
 import { getHomeData } from "@/lib/catalog.functions";
 import { formatMoney } from "@/lib/money";
 import { Button } from "@/components/ui/button";
