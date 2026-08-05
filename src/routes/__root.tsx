@@ -118,9 +118,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AppSplash />
       <div className="flex min-h-screen flex-col pattern-mud pb-[calc(3.75rem+env(safe-area-inset-bottom))] md:pb-0">
         <SiteHeader />
-        <main className="flex-1"><Outlet /></main>
+        <main className="flex-1"><PageTransition><Outlet /></PageTransition></main>
         <SiteFooter />
         <MobileTabBar />
       </div>
