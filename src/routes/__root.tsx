@@ -13,6 +13,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
+import { AppSplash } from "@/components/app-splash";
+import { PageTransition } from "@/components/page-transition";
 
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,6 +57,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Shop verified African vendors, book trusted artisans, and pay safely with escrow. PadiPlug protects every order until you say 'done'." },
       { name: "theme-color", content: "#1f5a3d" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "theme-color", content: "#faf7f2", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#101b18", media: "(prefers-color-scheme: dark)" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "PadiPlug" },
@@ -118,9 +122,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AppSplash />
       <div className="flex min-h-screen flex-col pattern-mud pb-[calc(3.75rem+env(safe-area-inset-bottom))] md:pb-0">
         <SiteHeader />
-        <main className="flex-1"><Outlet /></main>
+        <main className="flex-1"><PageTransition><Outlet /></PageTransition></main>
         <SiteFooter />
         <MobileTabBar />
       </div>
