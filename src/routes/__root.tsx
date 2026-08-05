@@ -116,11 +116,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col pattern-mud">
+      <div className="flex min-h-screen flex-col pattern-mud pb-[calc(3.75rem+env(safe-area-inset-bottom))] md:pb-0">
         <SiteHeader />
         <main className="flex-1"><Outlet /></main>
         <SiteFooter />
+        <MobileTabBar />
       </div>
+
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
