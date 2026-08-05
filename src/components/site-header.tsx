@@ -33,6 +33,8 @@ export function SiteHeader() {
   const { user, loading } = useSession();
   const { triggerInstall } = usePwaInstall();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const qc = useQueryClient();
 
   const { data: unread } = useQuery({
