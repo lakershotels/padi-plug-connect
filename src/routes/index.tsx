@@ -50,10 +50,7 @@ function Home() {
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-warm opacity-20 blur-3xl" />
-            <div className="overflow-hidden rounded-[2rem] border shadow-elevated">
-              <img src={heroImg} alt="African market seller with handmade goods" width={1600} height={1200} className="h-full w-full object-cover" />
-            </div>
+            <HeroAdCarousel />
             <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border bg-card p-4 shadow-elevated sm:block">
               <div className="flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"><Wallet className="h-5 w-5" /></div>
