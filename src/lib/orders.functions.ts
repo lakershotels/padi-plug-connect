@@ -398,3 +398,24 @@ export const submitReview = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+export const markReadyToShip = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const db = await admin();
+    const { data: order } = await db.from("orders").select("*").eq("id", data.orderId).maybeSingle();
+    if (!order) throw new Error("Order not found");
+    const sellerId = await sellerIdForOrder(db, order);
+    if (sellerId !== context.userId) throw new Error("Not authorized");
+    if (order.status !== "paid_escrow" || order.stage !== "processing") throw new Error("Order must be accepted first");
+    await db.from("orders").update({ stage: "ready_to_ship" }).eq("id", order.id);
+    await db.from("notifications").insert({
+      user_id: order.customer_id,
+      title: order.kind === "product" ? "Your order is packed and ready" : "Your booking is ready",
+      body: order.kind === "product" ? "The seller is preparing dispatch." : "The artisan is ready to start.",
+      link: `/orders/${order.id}`,
+    });
+    await log(db, context.userId, "order.ready_to_ship", order.id);
+    return { ok: true };
+  });
