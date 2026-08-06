@@ -102,7 +102,7 @@ export function AdminHeroManager() {
 
       <Card className="mt-3 space-y-3 p-4">
         <div className="text-sm font-semibold">{draft.id ? "Edit slide" : "Add a new slide"}</div>
-        <ImageUploader value={draft.image_url} onChange={(url) => setDraft({ ...draft, image_url: url })} label="Upload hero image" />
+        <ImageUploader value={draft.image_url} onChange={(url) => setDraft({ ...draft, image_url: url })} label="Upload hero image" aspect={4/3} maxWidth={1600} />
         <div className="grid gap-3 sm:grid-cols-2">
           <Input placeholder="Title (optional)" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
           <Input placeholder="Subtitle (optional)" value={draft.subtitle} onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })} />
