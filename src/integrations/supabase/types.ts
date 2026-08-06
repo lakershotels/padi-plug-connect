@@ -370,6 +370,42 @@ export type Database = {
           },
         ]
       }
+      hero_auto_overrides: {
+        Row: {
+          created_at: string
+          id: string
+          is_disabled: boolean
+          is_featured: boolean
+          is_pinned: boolean
+          source_id: string
+          source_type: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_disabled?: boolean
+          is_featured?: boolean
+          is_pinned?: boolean
+          source_id: string
+          source_type: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_disabled?: boolean
+          is_featured?: boolean
+          is_pinned?: boolean
+          source_id?: string
+          source_type?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       hero_slides: {
         Row: {
           created_at: string
@@ -378,6 +414,8 @@ export type Database = {
           id: string
           image_url: string
           is_active: boolean
+          is_featured: boolean
+          is_pinned: boolean
           link_url: string | null
           sort_order: number
           subtitle: string | null
@@ -391,6 +429,8 @@ export type Database = {
           id?: string
           image_url: string
           is_active?: boolean
+          is_featured?: boolean
+          is_pinned?: boolean
           link_url?: string | null
           sort_order?: number
           subtitle?: string | null
@@ -404,6 +444,8 @@ export type Database = {
           id?: string
           image_url?: string
           is_active?: boolean
+          is_featured?: boolean
+          is_pinned?: boolean
           link_url?: string | null
           sort_order?: number
           subtitle?: string | null
