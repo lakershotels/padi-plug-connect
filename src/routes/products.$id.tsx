@@ -6,10 +6,11 @@ import { toggleFavoriteProduct } from "@/lib/user.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { formatMoney } from "@/lib/money";
 import { Button } from "@/components/ui/button";
-import { Star, BadgeCheck, ShieldCheck, MapPin, Heart } from "lucide-react";
+import { Star, BadgeCheck, ShieldCheck, MapPin, Heart, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-session";
+import { addToCart } from "@/lib/cart-store";
 
 const productQuery = (id: string) =>
   queryOptions({ queryKey: ["product", id], queryFn: () => getProduct({ data: { id } }) });
@@ -118,6 +119,29 @@ function ProductDetail() {
               <Heart className="h-5 w-5" />
             </Button>
           </div>
+
+          <Button
+            variant="outline"
+            size="lg"
+            className="mt-3 w-full"
+            disabled={p.stock === 0}
+            onClick={() => {
+              addToCart({
+                productId: p.id,
+                title: p.title,
+                image: p.images?.[0] ?? null,
+                priceKobo: p.price_kobo,
+                quantity: qty,
+                vendorId: p.vendor_id,
+                vendorName: v?.store_name ?? "Seller",
+                vendorSlug: v?.slug ?? "",
+                stock: p.stock,
+              });
+              toast.success("Added to cart", { action: { label: "View cart", onClick: () => navigate({ to: "/cart" }) } });
+            }}
+          >
+            <ShoppingCart className="mr-2 h-5 w-5" /> Add to cart
+          </Button>
 
           <div className="mt-5 rounded-2xl border bg-secondary/50 p-4 text-sm">
             <div className="flex items-center gap-2 font-semibold"><ShieldCheck className="h-4 w-4 text-primary" /> Escrow protection</div>
