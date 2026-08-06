@@ -151,9 +151,13 @@ export function SiteHeader() {
                   <IconBadge count={unreadCount} />
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/cart" aria-label="Cart"><ShoppingBag className="h-5 w-5" /></Link>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link to="/cart" aria-label={`Cart${cartCount ? `, ${cartCount} items` : ""}`}>
+                  <ShoppingBag className="h-5 w-5" />
+                  <IconBadge count={cartCount} />
+                </Link>
               </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Account"><UserIcon className="h-5 w-5" /></Button>
