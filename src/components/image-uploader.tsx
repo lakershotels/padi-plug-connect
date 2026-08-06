@@ -3,27 +3,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { processImage } from "@/lib/image-process";
 
 type Props = {
   value: string;
   onChange: (url: string) => void;
   bucket?: "product-images" | "avatars" | "dispute-evidence";
   label?: string;
+  /** crop ratio, e.g. 16/9 for hero banners */
+  aspect?: number;
+  maxWidth?: number;
 };
 
 const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
 
-export function ImageUploader({ value, onChange, bucket = "product-images", label = "Upload image" }: Props) {
+export function ImageUploader({ value, onChange, bucket = "product-images", label = "Upload image", aspect, maxWidth = 1600 }: Props) {
   const [busy, setBusy] = useState(false);
 
-  const onFile = async (file: File | null) => {
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Max 5MB");
+  const onFile = async (input: File | null) => {
+    if (!input) return;
+    if (input.size > 15 * 1024 * 1024) {
+      toast.error("Max 15MB");
       return;
     }
     setBusy(true);
     try {
+      const file = await processImage(input, { aspect, maxWidth, maxHeight: maxWidth });
       const { data: userRes } = await supabase.auth.getUser();
       const uid = userRes.user?.id;
       if (!uid) throw new Error("Sign in required");
@@ -34,6 +39,7 @@ export function ImageUploader({ value, onChange, bucket = "product-images", labe
         upsert: false,
       });
       if (error) throw error;
+
       const { data: signed, error: sErr } = await supabase.storage.from(bucket).createSignedUrl(path, TEN_YEARS);
       if (sErr || !signed) throw sErr ?? new Error("Sign failed");
       onChange(signed.signedUrl);
