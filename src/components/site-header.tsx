@@ -18,6 +18,7 @@ import { getWalletBalance } from "@/lib/wallet.functions";
 import { isAdmin as isAdminFn } from "@/lib/admin.functions";
 import { formatMoney } from "@/lib/money";
 import { usePwaInstall } from "@/hooks/use-pwa-install";
+import { useCart } from "@/lib/cart-store";
 
 
 function IconBadge({ count }: { count: number }) {
@@ -44,6 +45,7 @@ export function SiteHeader() {
     refetchInterval: 60_000,
   });
   const unreadCount = unread?.count ?? 0;
+  const { count: cartCount } = useCart();
 
   const { data: wallet } = useQuery({
     queryKey: ["walletBalance"],
