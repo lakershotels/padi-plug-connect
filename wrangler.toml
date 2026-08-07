@@ -1,0 +1,77 @@
+# Wrangler configuration for Cloudflare Workers — template
+# IMPORTANT:
+# - Replace placeholders before deploying.
+# - NEVER put secret keys directly in this file. Use `wrangler secret put` or GitHub Actions secrets.
+# - This file assumes you build a worker bundle to dist/worker.mjs using `npm run build:worker`.
+
+name = "padi-plug-connect-worker"
+type = "modules"
+account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+workers_dev = true
+compatibility_date = "2026-08-07"
+compatibility_flags = []
+
+# Entry file produced by your worker build. Adjust if your build outputs a different path.
+main = "dist/worker.mjs"
+
+[build]
+command = "npm run build:worker"
+upload_format = "modules"
+
+# Directory that contains built worker assets (for `wrangler publish` upload)
+[build.upload]
+dir = "dist"
+
+# Non-secret public variables (safe to check in). Keep secrets out of this file.
+[vars]
+SUPABASE_URL = "https://lhmrvpvbhymtqqkyystr.supabase.co"
+# Replace with your anon/public key (do NOT commit service_role keys here)
+SUPABASE_ANON_KEY = "REPLACE_WITH_ANON_KEY"
+
+# Example production environment (set route + zone_id for your domain)
+[env.production]
+# Route pattern to bind this worker to (replace with your domain)
+route = "https://api.example.com/*"
+zone_id = "YOUR_CLOUDFLARE_ZONE_ID"
+
+# Preview environment will publish to workers.dev (useful for testing)
+[env.preview]
+workers_dev = true
+
+# Optional: Cron triggers
+# [[triggers.crons]]
+# schedule = "0 3 * * *"  # run daily at 03:00 UTC
+
+# Deployment notes:
+# 1) Set Cloudflare account_id and zone_id in this file or use `wrangler login` to configure your account.
+# 2) Set secrets (service role keys and any private API keys) via:
+#    wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+#    wrangler secret put OTHER_SECRET
+#    (This stores secrets in Cloudflare and they will be available to the worker at runtime.)
+# 3) In CI (GitHub Actions) prefer storing secrets as repository secrets and use `wrangler publish --env production` with env vars injected.
+# 4) Add a build script to package.json:
+#    "build:worker": "esbuild src/workers/index.ts --bundle --outdir=dist --format=esm --target=es2022"
+#    (Or adapt to your preferred bundler that outputs an ES module worker at dist/worker.mjs)
+# 5) To publish locally:
+#    wrangler publish           # publishes using this file (workers_dev or route/zone settings)
+#    wrangler publish --env production
+
+# Example: GitHub Actions snippet (add to .github/workflows/deploy.yml):
+#
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18'
+#       - name: Install deps
+#         run: npm ci
+#       - name: Build worker
+#         run: npm run build:worker
+#       - name: Publish to Cloudflare
+#         env:
+#           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+#         run: npx wrangler publish --env production
