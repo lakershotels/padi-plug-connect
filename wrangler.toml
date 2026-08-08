@@ -18,8 +18,8 @@ command = "npm run build:worker"
 # Non-secret public variables (safe to check in). Keep secrets out of this file.
 [vars]
 SUPABASE_URL = "https://lhmrvpvbhymtqqkyystr.supabase.co"
-# Replace with your anon/public key (do NOT commit service_role keys here)
-SUPABASE_ANON_KEY = "REPLACE_WITH_ANON_KEY"
+# Anon/public key for client-side operations
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxobXJ2cHZiaHltdHFxa3l5c3RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwNDE4MDEsImV4cCI6MjEwMTYxNzgwMX0.2d16X4Fc4L3gnKFjZVC_DOpM-NBnAZfF4TkqGoKlym8"
 
 # Optional: Cron triggers
 # [[triggers.crons]]
