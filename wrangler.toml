@@ -1,4 +1,4 @@
-# Wrangler configuration for Cloudflare Workers — template (Wrangler v4 compatible)
+# Wrangler configuration for Cloudflare Workers — Wrangler v4 compatible
 # IMPORTANT:
 # - Replace placeholders before deploying.
 # - NEVER put secret keys directly in this file. Use `wrangler secret put` or GitHub Actions secrets.
@@ -37,7 +37,6 @@ SUPABASE_ANON_KEY = "REPLACE_WITH_ANON_KEY"
 #    (Or adapt to your preferred bundler that outputs an ES module worker at dist/worker.mjs)
 # 5) To publish locally:
 #    npx wrangler publish           # publishes using this file (workers_dev or route/zone settings)
-#    npx wrangler publish --name <name>
 
 # Example: GitHub Actions snippet (add to .github/workflows/deploy-worker.yml):
 #
