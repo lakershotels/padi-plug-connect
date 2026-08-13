@@ -1,0 +1,91 @@
+name: PadiPlug Flutter Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "flutter-app/**"
+      - ".github/workflows/flutter-build.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "flutter-app/**"
+      - ".github/workflows/flutter-build.yml"
+
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    name: Build Android APK and AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get Flutter dependencies
+        working-directory: flutter-app
+        run: flutter pub get
+
+      - name: Analyze Flutter project
+        working-directory: flutter-app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        working-directory: flutter-app
+        run: flutter test
+
+      - name: Build release APK
+        working-directory: flutter-app
+        run: flutter build apk --release
+
+      - name: Build release AAB
+        working-directory: flutter-app
+        run: flutter build appbundle --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: padiplug-release-apk
+          path: flutter-app/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: padiplug-release-aab
+          path: flutter-app/build/app/outputs/bundle/release/app-release.aab
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get Flutter dependencies
+        working-directory: flutter-app
+        run: flutter pub get
+
+      - name: Build iOS
+        working-directory: flutter-app
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: padiplug-ios-build
+          path: flutter-app/build/ios/iphoneos/

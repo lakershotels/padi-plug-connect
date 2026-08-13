@@ -3,10 +3,10 @@
 The web app is the source of truth. Capacitor wraps it into native iOS and
 Android shells so you can publish to the App Store and Google Play.
 
-## First-time setup
+## First-time setup (on your own laptop, not in Lovable)
 
-1. Clone the repository locally.
-2. `cd padiplug && npm install`.
+1. In Lovable click **GitHub → Export to GitHub**, then `git clone` the repo.
+2. `cd padiplug && bun install` (or `npm install`).
 3. Add the native platforms once:
    ```bash
    npx cap add ios
@@ -14,7 +14,7 @@ Android shells so you can publish to the App Store and Google Play.
    ```
 4. Pull in the latest web build every time:
    ```bash
-   npm run build && npx cap sync
+   bun run build && npx cap sync
    ```
 5. Open in the native IDEs:
    ```bash
@@ -25,13 +25,14 @@ Android shells so you can publish to the App Store and Google Play.
 
 ## Hot-reload during development
 
-For local development, set `CAPACITOR_SERVER_URL` to a running local or
-remote dev server. For a production/App-Store build, remove the `server`
-block so the app ships its own bundled assets from `dist/`.
+`capacitor.config.ts` already points `server.url` at the Lovable preview so
+the native shell hot-reloads while you make changes here. For a
+production/App-Store build **delete the `server` block** so the app ships
+its own bundled assets from `dist/`.
 
 ## App identity
 
-- Bundle ID: `app.padiplug.connect`
+- Bundle ID: `app.lovable.padiplug`
 - Display name: `PadiPlug`
 
 Update both in `capacitor.config.ts` before your first store submission.

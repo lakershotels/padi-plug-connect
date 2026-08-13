@@ -19,6 +19,9 @@ dist-ssr
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
+# Environment files
+.env
+.env.*
 
 # Editor directories and files
 .vscode/*
@@ -31,5 +34,16 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
-.env
+# Local Flutter SDK and generated files
+flutter-sdk/
+flutter/
+*.zip
+
+
+# Local temporary/debug files
+homepage-response.txt
+npm-install-debug.txt
+temp_probe.cjs
+temp_probe.js
+tmp-css.txt
+tmp-main.txt

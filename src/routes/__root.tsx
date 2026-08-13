@@ -9,7 +9,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportError } from "../lib/error-reporting";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
@@ -34,7 +33,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => { reportError(error, { boundary: "tanstack_root_error_component" }); }, [error]);
   return (
     <div className="grid min-h-[60vh] place-items-center px-4">
       <div className="max-w-md text-center">
@@ -69,8 +67,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "PadiPlug — Africa's trusted marketplace" },
       { name: "twitter:description", content: "Shop verified African vendors, book trusted artisans, and pay safely with escrow. PadiPlug protects every order until you say 'done'." },
-      { property: "og:image", content: "/app-icon-512.png" },
-      { name: "twitter:image", content: "/app-icon-512.png" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/57c4c06b-c5fc-46cd-8bd1-8b555686c1c5/id-preview-d208cbd7--6bbef027-e176-4a83-b64b-97d077ac434a.lovable.app-1783169549332.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/57c4c06b-c5fc-46cd-8bd1-8b555686c1c5/id-preview-d208cbd7--6bbef027-e176-4a83-b64b-97d077ac434a.lovable.app-1783169549332.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

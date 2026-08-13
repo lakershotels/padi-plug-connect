@@ -18,6 +18,7 @@ import { getWalletBalance } from "@/lib/wallet.functions";
 import { isAdmin as isAdminFn } from "@/lib/admin.functions";
 import { formatMoney } from "@/lib/money";
 import { usePwaInstall } from "@/hooks/use-pwa-install";
+import { useCart } from "@/lib/cart-store";
 
 
 function IconBadge({ count }: { count: number }) {
@@ -44,6 +45,7 @@ export function SiteHeader() {
     refetchInterval: 60_000,
   });
   const unreadCount = unread?.count ?? 0;
+  const { count: cartCount } = useCart();
 
   const { data: wallet } = useQuery({
     queryKey: ["walletBalance"],
@@ -151,9 +153,13 @@ export function SiteHeader() {
                   <IconBadge count={unreadCount} />
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/cart" aria-label="Cart"><ShoppingBag className="h-5 w-5" /></Link>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link to="/cart" aria-label={`Cart${cartCount ? `, ${cartCount} items` : ""}`}>
+                  <ShoppingBag className="h-5 w-5" />
+                  <IconBadge count={cartCount} />
+                </Link>
               </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Account"><UserIcon className="h-5 w-5" /></Button>

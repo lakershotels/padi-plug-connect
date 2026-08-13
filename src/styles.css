@@ -170,23 +170,13 @@
 }
 
 @layer base {
-  *, *::before, *::after { box-sizing: border-box; }
   * { border-color: var(--color-border); }
-  html {
-    font-family: var(--font-sans);
-    min-width: 100vw;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-  }
+  html { font-family: var(--font-sans); }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    min-width: 100vw;
-    overflow-x: hidden;
-    overscroll-behavior-x: none;
-    touch-action: pan-y;
   }
   h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
 }

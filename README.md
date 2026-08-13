@@ -1,6 +1,8 @@
 # PadiPlug Marketplace
 
-Build a production-ready African Marketplace Platform called PadiPlug for Web (React) and Mobile using Supabase (Authentication, PostgreSQL Database, Storage, Realtime, Edge Functions).
+Lovable Build Prompt – PadiPlug
+
+Build a production-ready African Marketplace Platform called PadiPlug for Web (React) and Mobile (Flutter) using Supabase (Authentication, PostgreSQL Database, Storage, Realtime, Edge Functions).
 
 Vision
 
@@ -252,18 +254,19 @@ Goal
 
 Build the most trusted African marketplace where customers safely buy products, book verified artisans, use escrow payments, confirm delivery using the Done / Order Received / Service Completed button before funds are released, and support local businesses through a secure, scalable platform ready for deployment on Android, iOS, and the web.
 
-This project is maintained as a standalone web/mobile marketplace.
+This project was built with [Lovable](https://lovable.dev).
+
+**Live app**: https://padi-plug-connect.lovable.app
+
+## Build with Lovable
+
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/6bbef027-e176-4a83-b64b-97d077ac434a).
+
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
-
-Prefer working locally? You need Node.js and npm installed.
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm install
-npm run dev
-```
 
 Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 

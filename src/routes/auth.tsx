@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleEmail = async (e: React.FormEvent) => {
+  const handleEmail = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -53,21 +53,19 @@ function AuthPage() {
   };
 
   const handleGoogle = async () => {
+    setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo: window.location.origin,
-        },
+        options: { redirectTo: window.location.origin },
       });
+
       if (error) throw error;
-      if (data?.url) {
-        window.location.assign(data.url);
-        return;
-      }
       navigate({ to: "/dashboard" });
     } catch (err: any) {
-      toast.error(err?.message ?? "Unable to sign in with Google");
+      toast.error(err?.message ?? "Google sign in failed");
+    } finally {
+      setLoading(false);
     }
   };
 

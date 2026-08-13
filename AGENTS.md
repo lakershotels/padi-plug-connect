@@ -1,4 +1,4 @@
-# Repository Agent Guidance
-
-This repository is now maintained as a standalone web/mobile marketplace project.
-Keep the branch in a working state and avoid rewriting published git history when collaborating.
+<!-- LOVABLE:BEGIN removed -->
+> This project previously contained Lovable preview metadata which has been
+> removed to ensure the repository and CI are not dependent on Lovable services.
+<!-- LOVABLE:END -->

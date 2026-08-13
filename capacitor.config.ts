@@ -3,25 +3,15 @@ import type { CapacitorConfig } from "@capacitor/cli";
 /**
  * PadiPlug — Capacitor config for native iOS/Android builds.
  *
- * Development:
- *   Set `CAPACITOR_SERVER_URL` to a running local or remote dev server for
- *   hot reload. For production builds, remove the `server` block so the app
- *   ships its bundled assets from `dist/`.
+ * Development (hot-reload against local web dev):
+ *   The native shell can point to the local Vite dev server while you iterate.
+ *   For a store-ready build, remove the `server` block and run `bun run build`
+ *   + `npx cap sync` so the app ships bundled web assets from `dist/`.
  */
-const serverUrl = process.env.CAPACITOR_SERVER_URL;
-
 const config: CapacitorConfig = {
-  appId: "app.padiplug.connect",
+  appId: "app.my.padiplug",
   appName: "PadiPlug",
   webDir: "dist",
-  ...(serverUrl
-    ? {
-        server: {
-          url: serverUrl,
-          cleartext: true,
-        },
-      }
-    : {}),
   ios: {
     contentInset: "always",
   },

@@ -9,7 +9,11 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build:worker": "esbuild src/workers/index.ts --bundle --outfile=dist/worker.mjs --format=esm --target=es2022",
+    "build:server": "npm run build && node scripts/fix-wrangler.js",
+    "publish:worker": "npm run build:worker && node scripts/fix-wrangler.js && npx wrangler publish",
+    "dev:all": "concurrently \"npm run dev\" \"supabase start\""
   },
   "dependencies": {
     "@capacitor/android": "^8.4.1",
@@ -79,6 +83,8 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.2.0",
+    "concurrently": "^8.2.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
